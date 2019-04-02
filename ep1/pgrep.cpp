@@ -3,12 +3,20 @@
 #include <iostream>
 #include <pthread.h>
 #include <vector>
+#include <regex.h>
 using namespace std;
+
+
+//Os Mutexes são decarados como variáveis globais de forma que eles fiquem acessives para todas as threads:
+pthread_mutex_t lock_indexes;
+pthread_mutex_t lock_cout;
 
 void pgrep() {
     cout << "Pão\n";
 }
 
+
+//Falta adicionar um modo recursivo:
 void get_files(const string &path, vector<string> &files, const bool show_hidden = false){
     DIR *dir;
     struct dirent *epdf;
@@ -35,7 +43,10 @@ int main(int argc, char *argv[]) {
 
     int MAX_THREADS;
     char *REGEX, *PATH;
-    vector<string> v;
+    vector<string> files;
+    vector<int> indexes;
+    vector<vector<string>*> findings;
+
  
     MAX_THREADS = atoi(argv[1]);
     REGEX = argv[2];
@@ -44,12 +55,29 @@ int main(int argc, char *argv[]) {
     cout << "MAX_THREADS: " << MAX_THREADS << "\n";
     cout << "REGEX: " << REGEX << "\n";
     cout << "PATH: " << PATH << "\n";
-    
-    pgrep();
-    get_files(PATH, v, false);
 
-    for (std::vector<string>::const_iterator i = v.begin(); i != v.end(); ++i)
+    get_files(PATH, files, false);
+    int cont=0;
+    for (std::vector<string>::const_iterator i = files.begin(); i != files.end(); ++i){
+        cout << cont;
+        indexes.push_back(cont++);
+        findings.push_back(new vector<string>);
         cout << *i << endl;
+    }
+    pthread_mutex_init(&lock_indexes,NULL);
+    pthread_mutex_init(&lock_cout,NULL);
+    
+    // string line="oi";
+    // findings.at(0)->push_back(line);
+    // for (std::vector<vector<string>*>::const_iterator i = findings.begin(); i != findings.end(); ++i){
+    //     cout << (**i).size() << endl;
+
+
+
+    // }
+
+
+
     
     return 0;
 }
