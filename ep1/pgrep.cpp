@@ -5,6 +5,7 @@
 #include <vector>
 #include <regex.h>
 #include <fstream>
+#include <unistd.h>
 using namespace std;
 
 
@@ -13,6 +14,7 @@ using namespace std;
 /* Declaração dos Mutexes. Eles são declarados como variáveis globais para que possam ser acessados de todas as Threads. */
 pthread_mutex_t lock_indexes; //Mutex dos vetores de índices, para que nenhuma thread processe o mesmo arquivo duas vezes.
 pthread_mutex_t lock_cout; //Mutex da saída de impressão padrão, para que threads não misturem o conteúdo de impressão de diferentes arquivos.
+
 
 /* Estrutura de dados para encapsular de forma prática todos os dados que todas as threads precisam receber.
    A Struct é declarada gobalmente para que a função main e as demais threads possam acessá-la. */
@@ -26,9 +28,7 @@ struct thr_data{
 /*FUNÇÕES AUXILIARES*/
 
 /* Função que lê o diretório passado pelo usuário, salvando o nome dos arquivos que precisam ser processados num vetor de strings
-   TODO: É PRECISO ADICIONAR UMA VARIÁVEL DE ENTRADA QUE DEFINA SE A BUSCA VAI SER RECURSIVA OU NÃO... SE SIM EA PRECISA RETORNAR AS FILES
-   DE TODOS OS SUBDIRETÓRIOS TAMBÉM, COM SEUS CAMINHOS RELATIVOS. DO JEITO QUE ESTÁ ELE NÃO TEM ESSA OPÇÃO E SÓ ESTÁ RETORNANDO NO VETOR
-   OS NOMES DOS ARQUIVOS CONTIDOS NO DIRETORIO PRINCIPAL.
+   TODO: É NECESSÁRIO PODER CONTROLAR QUANDO A BUSCA É RECURSIVA QUANDO NÃO, POR QUE ISSO DEVERIA SER OPÇÃO DO USUARIO.
 */
 void get_files(const string &path, vector<string> &files, const bool show_hidden = false){
     DIR *dir;
@@ -54,56 +54,51 @@ void get_files(const string &path, vector<string> &files, const bool show_hidden
   De forma que todas as threads são "iguais" e, nesse caso, só uma função de threads é necessária.*/
 void *thr_func(void* arg) {
     thr_data* data= (struct thr_data*) arg; //Primeiro faz o cast do argumento para a struct apropriada. O Pthreads exige que os argumentos sejam dados como ponteiro de void, o que exige que façamos uma conversão de volta para o formato apropriado dentro da função de thread.
-    cout << "nasci\n"; //debug
-    int time2work=1;
+    //cada thread cuida de um arquivo por vez... Caso o numero de arquivos seja maior que  o de threads, elas ficam percorrendo os aqruivos livres em loop:
+    int time2work=1; //Indica que ainda há arquivos a serem buscados.
     while(time2work){
-        cout << "vô trabalha\n"; //debug
-        pthread_mutex_lock(&lock_indexes);
+        pthread_mutex_lock(&lock_indexes); //Usa-se o mutex para consultar os indices dos arquivos a serem processados, sem gerar condição de corrida.
+        //Se o vetor de indices esta vazio não há o que fazer:
         if(data->indexes_ptr->empty()){
             pthread_mutex_unlock(&lock_indexes);
             time2work=0;
         }
+        //Caso contrário o a thread pega seu indice de trabalho e desbloqueia o vetor de indices:
         else{
-            int work_index=data->indexes_ptr->back();
-            data->indexes_ptr->pop_back();
+            int work_index=data->indexes_ptr->back(); //Pega-se o indice
+            data->indexes_ptr->pop_back();//Remove o indice do vetor para que nenhuma outra thread vote a pegá-lo.
             pthread_mutex_unlock(&lock_indexes);
-            ifstream work_file(data->files_ptr->at(work_index));
+            ifstream work_file(data->files_ptr->at(work_index)); //abre-se o leitor do arquivo correspondente ao indice de trabalho
             string line;
-            int line_cont=0;
-            cout << data->files_ptr->at(work_index); //debug
+            int line_cont=0; //Contador de linhas para marcar as linhas em que há match com a regex.
+            // Percorre-se o arquivo lendo linha por linha e procurando matches com a regex:
             while(!work_file.eof()){
                 work_file >> line;
-                const char* c_line=line.c_str();
+                const char* c_line=line.c_str(); // É necessario converter a string para um ponteiro de char, já que o regex.h foi feito para trabalhar com strings em c.
+                //Verifica-se a compatibilidade, caso haja match adiciona-se o resultado ao vetor de findings referente aquele arquivo.
                 if (regexec(data->preg_ptr, c_line, 0, 0, 0)==0){
                     data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+":"+to_string(line_cont));
-                    cout << "achei\n"; //debug
                 }
                 line_cont++;
             }
 
+            //Imprime os matches daquele arquivo. Para isso é necessário trancar a saída.
             pthread_mutex_lock(&lock_cout);
-            cout << "Vo imprimi!\n"; //debug
             while(!data->findings_ptr->at(work_index)->empty()){
                 cout << data->findings_ptr->at(work_index)->back() << endl;
-                data->findings_ptr->at(work_index)->pop_back();
+                data->findings_ptr->at(work_index)->pop_back(); //Remove-se a linha impressa do vetor
             }
             pthread_mutex_unlock(&lock_cout);
 
         }
     }
-    cout << "tchau!\n"; //debug
-    pthread_exit(NULL);
+    pthread_exit(NULL);// Ao final a thread é encerrada com resultado Nulo, o que indica seu sucesso.
 }
-    // pthread_mutex_lock(&lock_cout);
-    // cout << "Um dia eu farei algo útil, mas até lá, só serei feliz." << endl;
-    // pthread_mutex_unlock(&lock_cout);
-
-    //A thread é terminada com sinal nulo, que indica sucesso.
 
 
 
 /* FUNÇÃO PRINCIPAL */
-/* TODO: É PRECISO ALTERAR A LEITURA DOS ARGUMENTOS DE FORMA QUE EA RECEBA UM ARGUMENTO OPCIONAL QUE DEFINE SE A BUSCA DEVE SER RECURSIVA OU NÃO. ESSE ARGUMENTO DEVE ENTÃO SER REPASSADO PARA A FUNÇÃO DE LEITURA DE ARQUIVOS. */
+/* TODO: É PRECISO ALTERAR A LEITURA DOS ARGUMENTOS DE FORMA QUE    ELA RECEBA UM ARGUMENTO OPCIONAL QUE DEFINE SE A BUSCA DEVE SER RECURSIVA OU NÃO. ESSE ARGUMENTO DEVE ENTÃO SER REPASSADO PARA A FUNÇÃO DE LEITURA DE ARQUIVOS. */
 int main(int argc, char *argv[]) {
     if (argc < 4) {
         cout << "usage: pgrep <MAX_THREADS> <REGEX_PESQUISA> <CAMINHO_DO_DIRETORIO>\n";
@@ -125,6 +120,7 @@ int main(int argc, char *argv[]) {
     
     //Recolhem-se os nomes dos aqruivos a serem processados, colocando-os no vetor files:
     get_files(PATH, files, false);
+
 
     //Os valores de índices e achados são povoados, respectivamente com índices e com ponteiros para vetores de saídas, um correspondente a cada arquivo:
     int index=0;
