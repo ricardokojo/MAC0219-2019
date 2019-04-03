@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <vector>
 #include <regex.h>
+#include <fstream>
 using namespace std;
 
 
@@ -53,13 +54,52 @@ void get_files(const string &path, vector<string> &files, const bool show_hidden
   De forma que todas as threads são "iguais" e, nesse caso, só uma função de threads é necessária.*/
 void *thr_func(void* arg) {
     thr_data* data= (struct thr_data*) arg; //Primeiro faz o cast do argumento para a struct apropriada. O Pthreads exige que os argumentos sejam dados como ponteiro de void, o que exige que façamos uma conversão de volta para o formato apropriado dentro da função de thread.
-    
-    pthread_mutex_lock(&lock_cout);
-    cout << "Um dia eu farei algo útil, mas até lá, só serei feliz." << endl;
-    pthread_mutex_unlock(&lock_cout);
+    cout << "nasci\n"; //debug
+    int time2work=1;
+    while(time2work){
+        cout << "vô trabalha\n"; //debug
+        pthread_mutex_lock(&lock_indexes);
+        if(data->indexes_ptr->empty()){
+            pthread_mutex_unlock(&lock_indexes);
+            time2work=0;
+        }
+        else{
+            int work_index=data->indexes_ptr->back();
+            data->indexes_ptr->pop_back();
+            pthread_mutex_unlock(&lock_indexes);
+            ifstream work_file(data->files_ptr->at(work_index));
+            string line;
+            int line_cont=0;
+            cout << data->files_ptr->at(work_index); //debug
+            while(!work_file.eof()){
+                work_file >> line;
+                const char* c_line=line.c_str();
+                if (regexec(data->preg_ptr, c_line, 0, 0, 0)==0){
+                    data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+":"+to_string(line_cont));
+                    cout << "achei\n"; //debug
+                }
+                line_cont++;
+            }
 
-    pthread_exit(NULL); //A thread é terminada com sinal nulo, que indica sucesso.
+            pthread_mutex_lock(&lock_cout);
+            cout << "Vo imprimi!\n"; //debug
+            while(!data->findings_ptr->at(work_index)->empty()){
+                cout << data->findings_ptr->at(work_index)->back() << endl;
+                data->findings_ptr->at(work_index)->pop_back();
+            }
+            pthread_mutex_unlock(&lock_cout);
+
+        }
+    }
+    cout << "tchau!\n"; //debug
+    pthread_exit(NULL);
 }
+    // pthread_mutex_lock(&lock_cout);
+    // cout << "Um dia eu farei algo útil, mas até lá, só serei feliz." << endl;
+    // pthread_mutex_unlock(&lock_cout);
+
+    //A thread é terminada com sinal nulo, que indica sucesso.
+
 
 
 /* FUNÇÃO PRINCIPAL */
@@ -124,6 +164,7 @@ int main(int argc, char *argv[]) {
     //As Threads são criadas e cada uma delas invoca a função de thread com os dados contidos em data. Caso a criação de alguma thread
     // falhe, o programa retorna um erro e é encerrado.
     //TODO: TALVEZ FOSSE PRUDENTE MUDAR ISSO PARA QUE O PROGRAMA NÃO PARASSE CASO HOVESSE UMA FALHA NA CRIAÇÃO DE UMA THREAD. O IDEAL SERIA ATUALIZAR O NÚMERO DE MAX_THREADS, DECREMENTAR O i E NÃO RETORNAR FALHA. DE FORMA EUQ O PROGRAMA AINDA CONTINUARÁ RODANDO, MAS APENAS COM O NÚMERO DE THREADS QUE ELE FOI CAPAZ DE CRIAR. 
+
     int resp_creation;
     for(int i=0;i<MAX_THREADS;i++){
         if ((resp_creation = pthread_create(&thr[i], NULL, thr_func, &data))) {
