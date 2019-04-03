@@ -19,6 +19,7 @@ struct thr_data{
     vector<int>* indexes_ptr; //Ponteiro para o vetor de índices.
     vector<vector<string>*>* findings_ptr; //Ponteiro para o vetor que armazena os ponteiros dos vetores correspondentes aos achados de cada arquivo.
     vector<string>* files_ptr; //Ponteiro do vetor que carrega os nomes dos arquivos a serem processados.
+    regex_t* preg_ptr; //Ponteiro para o objeto que representa a regex compilada.
 };
 
 /*FUNÇÕES AUXILIARES*/
@@ -85,11 +86,23 @@ int main(int argc, char *argv[]) {
     //Recolhem-se os nomes dos aqruivos a serem processados, colocando-os no vetor files:
     get_files(PATH, files, false);
 
-    //Os vatores de índices e achados são povoados, respectivamente com índices e com ponteiros para vetores de saídas, um correspondente a cada arquivo:
+    //Os valores de índices e achados são povoados, respectivamente com índices e com ponteiros para vetores de saídas, um correspondente a cada arquivo:
     int index=0;
     for (std::vector<string>::const_iterator i = files.begin(); i != files.end(); ++i){
         indexes.push_back(index++);
         findings.push_back(new vector<string>);
+    }
+
+    //Declaram-se as variáveis necessárias para a compilação da regex.
+    regex_t preg;
+    int resp_regex_comp;
+
+    //Compila-se a regex de entrada. Como só existe uma única regex de busca, ela só precisa ser compilada uma única vez e sua versão compilada pode ser passada para todas a threads para comparação, economizando processamento:
+    //WARNING:AS CINCO LINHAS DE CÓDIGO A SEGUIR NÃO FORAM APROPRIADAMENTE TESTADAS AINDA. PROSSIGA COM CAUTELA.
+    resp_regex_comp=regcomp(&preg,REGEX,0);
+    if(resp_regex_comp!=0){
+        cerr << "error: regex compilation failed; please, verify you regex." << endl;
+        return EXIT_FAILURE; //Caso a regex não possa ser compilada com sucesso o programa é encerrado, pois é impossível continuar assim.
     }
 
     //Os ponteiros das estruturas recém-criadas e iniciaizadas são encapsulados numa estrurura apropriada:
@@ -97,6 +110,7 @@ int main(int argc, char *argv[]) {
     data.indexes_ptr=&indexes;
     data.findings_ptr=&findings;
     data.files_ptr=&files;
+    data.preg_ptr=&preg;
 
 
     //São feitos os preparativos que permitem o processamento paralelo:
