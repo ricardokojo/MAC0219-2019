@@ -63,6 +63,7 @@ void *thr_func(void* arg) {
             time2work = 0;
         } else {
             // Caso contrário o a thread pega seu indice de trabalho e desbloqueia o vetor de indices:
+            pthread_mutex_unlock(&lock_indexes);
             int work_index = data->indexes_ptr->back(); // Pega-se o indice
             data->indexes_ptr->pop_back();// Remove o indice do vetor para que nenhuma outra thread vote a pegá-lo.
             pthread_mutex_unlock(&lock_indexes);
@@ -75,12 +76,11 @@ void *thr_func(void* arg) {
                 const char* c_line = line.c_str(); // É necessario converter a string para um ponteiro de char, já que o regex.h foi feito para trabalhar com strings em c.
                 // Verifica-se a compatibilidade, caso haja match adiciona-se o resultado ao vetor de findings referente aquele arquivo.
                 if (regexec(data->preg_ptr, c_line, 0, 0, 0) == 0){
-                    data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+":"+to_string(line_cont));
+                    data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+" :"+to_string(line_cont));
                 }
                 line_cont++;
             }
             //Imprime os matches daquele arquivo. Para isso é necessário trancar a saída.
-            pthread_mutex_lock(&lock_cout);
             while(!data->findings_ptr->at(work_index)->empty()){
                 cout << data->findings_ptr->at(work_index)->back() << endl;
                 data->findings_ptr->at(work_index)->pop_back(); //Remove-se a linha impressa do vetor
@@ -167,21 +167,4 @@ int main(int argc, char *argv[]) {
     return 0; // Retorna-se um 0 bem rechonchudo e saboroso.
 }
 
-//Uns lixinhos que o sub quer guardar por enquanto pra consultar depois:
 
-    // string line="oi";
-    // findings.at(0)->push_back(line);
-    // for (std::vector<vector<string>*>::const_iterator i = findings.begin(); i != findings.end(); ++i){
-    //     cout << (**i).size() << endl;
-    // }
-
-    //thrfunc:
-    // pthread_mutex_lock(&lock_cout);
-    // pthread_mutex_lock(&lock_indexes);
-    // int work_index=data->indexes_ptr->at(0);
-    // data->findings_ptr->at(0)->push_back("Wi");
-    // cout <<  data->findings_ptr->at(0)->back() << endl;
-    // cout << data->files_ptr->at(0) << endl;
-    // cout << "Olá eu sou uma thread! Eu estou viva e em breve morrerei." << endl;
-    // pthread_mutex_unlock(&lock_cout);
-    // pthread_mutex_unlock(&lock_indexes);

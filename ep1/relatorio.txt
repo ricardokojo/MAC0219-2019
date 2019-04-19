@@ -1,6 +1,6 @@
-Bruna Bazaluk
-Felipe Serras
-Ricardo Kojo
+Bruna Bazaluk   9797002
+Felipe Serras   8539986
+Ricardo Kojo    
 
 	Durante o processo de planejamento cogitamos diversas ideias diferentes para 
 resolver o problema. Depois de alguns estudos e testes decidimos que a primeira 
@@ -21,7 +21,10 @@ arquivos; quando uma thread acaba seu trabalho, ela tranca a saída padrão com 
 mutex para printar o que foi encontrado, logo após, libera o mutex e busca o 
 próximo item da lista e começa sua busca nele. Quando a thread for pegar o 
 próximo arquivo e a lista estiver vazia, ela morre.  
-
+	Testamos nosso programa em diversos diretórios, incluindo o repositório do 
+linux-iio[3], que tem 3.6 GB, e a média de duração foi de x minutos; os testes 
+foram realizados em um notebook Samsung NP550P5C-AD1BR (Intel Core i7 3630QM 
+2.4GHz, 8GB DDR3) e a contagem de tempo foi feita utilizando um relógio simples.
 
 	[1] https://stackoverflow.com/questions/13129340/recursive-function-for-listing-all-files-in-sub-directories
 	[2]https://computing.llnl.gov/tutorials/pthreads/
