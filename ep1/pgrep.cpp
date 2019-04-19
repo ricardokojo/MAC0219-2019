@@ -28,7 +28,6 @@ struct thr_data{
 /*FUNÇÕES AUXILIARES*/
 
 /* Função que lê o diretório passado pelo usuário, salvando o nome dos arquivos que precisam ser processados num vetor de strings
-   TODO: É NECESSÁRIO PODER CONTROLAR QUANDO A BUSCA É RECURSIVA QUANDO NÃO, POR QUE ISSO DEVERIA SER OPÇÃO DO USUARIO.
 */
 void get_files(const string &path, vector<string> &files, const bool show_hidden = false){
     DIR *dir;
@@ -54,7 +53,7 @@ void get_files(const string &path, vector<string> &files, const bool show_hidden
    De forma que todas as threads são "iguais" e, nesse caso, só uma função de threads é necessária.*/
 void *thr_func(void* arg) {
     thr_data* data = (struct thr_data*) arg; // Primeiro faz o cast do argumento para a struct apropriada. O Pthreads exige que os argumentos sejam dados como ponteiro de void, o que exige que façamos uma conversão de volta para o formato apropriado dentro da função de thread.
-    // cada thread cuida de um arquivo por vez... Caso o numero de arquivos seja maior que  o de threads, elas ficam percorrendo os aqruivos livres em loop:
+    // cada thread cuida de um arquivo por vez... Caso o numero de arquivos seja maior que  o de threads, elas ficam percorrendo os arquivos livres em loop:
     int time2work = 1; // Indica que ainda há arquivos a serem buscados.
     while (time2work) {
         pthread_mutex_lock(&lock_indexes); // Usa-se o mutex para consultar os indices dos arquivos a serem processados, sem gerar condição de corrida.
@@ -95,7 +94,6 @@ void *thr_func(void* arg) {
 
 
 /* FUNÇÃO PRINCIPAL */
-/* TODO: É PRECISO ALTERAR A LEITURA DOS ARGUMENTOS DE FORMA QUE    ELA RECEBA UM ARGUMENTO OPCIONAL QUE DEFINE SE A BUSCA DEVE SER RECURSIVA OU NÃO. ESSE ARGUMENTO DEVE ENTÃO SER REPASSADO PARA A FUNÇÃO DE LEITURA DE ARQUIVOS. */
 int main(int argc, char *argv[]) {
     if (argc < 4) {
         cout << "usage: pgrep <MAX_THREADS> <REGEX_PESQUISA> <CAMINHO_DO_DIRETORIO>\n";
@@ -110,7 +108,7 @@ int main(int argc, char *argv[]) {
     REGEX = argv[2];
     PATH = argv[3];
 
-    // Declaram-se as'estruturas de dados necessárias para o processamento das threads:
+    // Declaram-se as estruturas de dados necessárias para o processamento das threads:
     vector<string> files;
     vector<int> indexes;
     vector<vector<string>*> findings;
@@ -130,7 +128,6 @@ int main(int argc, char *argv[]) {
     int resp_regex_comp;
 
     // Compila-se a regex de entrada. Como só existe uma única regex de busca, ela só precisa ser compilada uma única vez e sua versão compilada pode ser passada para todas a threads para comparação, economizando processamento:
-    // WARNING:AS CINCO LINHAS DE CÓDIGO A SEGUIR NÃO FORAM APROPRIADAMENTE TESTADAS AINDA. PROSSIGA COM CAUTELA.
     resp_regex_comp = regcomp(&preg, REGEX, 0);
     if(resp_regex_comp != 0){
         cerr << "error: regex compilation failed; please, verify you regex." << endl;
@@ -154,9 +151,7 @@ int main(int argc, char *argv[]) {
 
     // As Threads são criadas e cada uma delas invoca a função de thread com os dados contidos em data. Caso a criação de alguma thread
     // falhe, o programa retorna um erro e é encerrado.
-    // TODO: TALVEZ FOSSE PRUDENTE MUDAR ISSO PARA QUE O PROGRAMA NÃO PARASSE CASO HOVESSE UMA FALHA NA CRIAÇÃO DE UMA THREAD. O IDEAL SERIA ATUALIZAR O NÚMERO DE MAX_THREADS, DECREMENTAR O i E NÃO RETORNAR FALHA. DE FORMA EUQ O PROGRAMA AINDA CONTINUARÁ RODANDO, MAS APENAS COM O NÚMERO DE THREADS QUE ELE FOI CAPAZ DE CRIAR. 
-
-    int resp_creation;
+        int resp_creation;
     for(int i = 0; i < MAX_THREADS; i++){
         if ((resp_creation = pthread_create(&thr[i], NULL, thr_func, &data))) {
             cerr << "error: attempt to create thread" << i << "failed! please check the capabilities of your system before defining an absurd number of threads.." << endl;

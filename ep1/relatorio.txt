@@ -1,0 +1,27 @@
+Bruna Bazaluk
+Felipe Serras
+Ricardo Kojo
+
+	Durante o processo de planejamento cogitamos diversas ideias diferentes para 
+resolver o problema. Depois de alguns estudos e testes decidimos que a primeira 
+coisa que o programa faz é listar todos os arquivos de todos os diretórios. 
+Nenhum integrante do grupo já havia mexido com leitura de arquivos em C++, essa 
+foi a primeira dificuldade, que superamos rapidamente, estudando alguns códigos 
+encontrados na internet[1]. 
+	Outro passo importante seria o processamento de REGEX. Novamente, estudamos
+bastante pois nenhum membro do grupo tinha familiaridade com expressões 
+regulares.
+	Com a lista feita o próximo passo é criar as threads. Estudando a 
+documentação do pthreads[2] conseguimos montar a base de nosso programa: cada 
+thread criada é responsável pela busca em um elemento da lista, desse modo, cada 
+vez que uma thread vai consultar a lista de arquivos, há um mutex para garantir 
+que nenhuma outra thread consiga alterar a lista, ou o vetor de índices, que 
+representa qual arquivo já foi visitado, seguindo a ordem da listagem de 
+arquivos; quando uma thread acaba seu trabalho, ela tranca a saída padrão com um 
+mutex para printar o que foi encontrado, logo após, libera o mutex e busca o 
+próximo item da lista e começa sua busca nele. Quando a thread for pegar o 
+próximo arquivo e a lista estiver vazia, ela morre.  
+
+
+	[1] https://stackoverflow.com/questions/13129340/recursive-function-for-listing-all-files-in-sub-directories
+	[2]https://computing.llnl.gov/tutorials/pthreads/
