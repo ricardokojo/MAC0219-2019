@@ -2,7 +2,7 @@ CC=g++
 CCFLAGS=
 LDFLAGS=-lpthread
 
-pgrep.o: pgrep.cpp
+pgrep: pgrep.cpp
 	$(CC) $(CCFLAGS) $< -o $@ $(LDFLAGS)
 
 .PHONY: clean
