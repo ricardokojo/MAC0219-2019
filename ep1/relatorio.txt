@@ -22,9 +22,31 @@ mutex para printar o que foi encontrado, logo após, libera o mutex e busca o
 próximo item da lista e começa sua busca nele. Quando a thread for pegar o 
 próximo arquivo e a lista estiver vazia, ela morre.  
 	Testamos nosso programa em diversos diretórios, incluindo o repositório do 
-linux-iio[3], que tem 3.6 GB, e a média de duração foi de x minutos; os testes 
-foram realizados em um notebook Samsung NP550P5C-AD1BR (Intel Core i7 3630QM 
-2.4GHz, 8GB DDR3) e a contagem de tempo foi feita utilizando um relógio simples.
+linux-iio[3], que tem 3.6 GB, e a média de duração foi de 15 minutos, utilizando
+8 threads; os testes foram realizados em um notebook Samsung NP550P5C-AD1BR 
+(Intel Core i7 3630QM 2.4GHz, 8GB DDR3) e a contagem de tempo foi feita 
+utilizando um relógio simples.
+
+	Observação: Ao testar strings simples, como cacatua, o funcionamento foi 
+normal. Mas ao testar regex mais complexas tivemos alguns problemas, 
+inicialmente. Regex's como \wvo, que deveria dar match com qualquer caractere 
+seguido de vo não retornava uma resposta apropriada. Ao imprimirmos o valor 
+recebido como argumento pelo programa, vimos que o valor recebido era 
+simplesmente wvo, sem a contra-barra. Acreditamos que isso seja um problema da 
+passagem do bash para o programa. Símboos como (, \ e { são próprios do bash e 
+ele não entende o uso desses caracteres como os caracteres em si.
+	Por esse ser um problema na interpretação da string por parte do bash, não 
+achamos que seria possível ou necessário fazer qualquer tratamento em ralação a 
+isso, pois não está dentro do escopo do programa. Mas identificamos maneiras 
+de neutralizá-lo: É possível escapar os caracteres especiais do bash adicionando
+\ antes de cada um deles, ou colocar a string da regex entre aspas simples. 
+Dessa maneira a regex \wvo deveria ser escrita como '\wvo' ou \\wvo. Ambas 
+alternativas foram testadas e funcionaram bem.
+	Caracteres como (  { ,  e . são considerados como suas aparições literais 
+mesmo dentro de aspas simples, para serem considerados como elementos sintéticos
+da regex eles tem que ser precedidos de \ mas dessa vez apenas de uma unica e 
+não de duas, como seria o caso sem aspas simples.
 
 	[1] https://stackoverflow.com/questions/13129340/recursive-function-for-listing-all-files-in-sub-directories
 	[2]https://computing.llnl.gov/tutorials/pthreads/
+	[3]https://www.kernel.org/doc/html/v4.15/driver-api/iio/index.html
