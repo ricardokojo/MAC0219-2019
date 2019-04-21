@@ -75,7 +75,7 @@ void *thr_func(void* arg) {
                 const char* c_line=line.c_str(); // É necessario converter a string para um ponteiro de char, já que o regex.h foi feito para trabalhar com strings em c.
                 //Verifica-se a compatibilidade, caso haja match adiciona-se o resultado ao vetor de findings referente aquele arquivo.
                 if (regexec(data->preg_ptr, c_line, 0, 0, 0)==0){
-                    data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+":"+to_string(line_cont));
+                    data->findings_ptr->at(work_index)->push_back(data->files_ptr->at(work_index)+": "+to_string(line_cont));
                 }
                 line_cont++;
             }
