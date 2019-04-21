@@ -72,8 +72,7 @@ void *thr_func(void* arg) {
             string line;
             int line_cont=0; //Contador de linhas para marcar as linhas em que há match com a regex.
             // Percorre-se o arquivo lendo linha por linha e procurando matches com a regex:
-            while(!work_file.eof()){
-                work_file >> line;
+            while(getline(work_file,line)){
                 const char* c_line=line.c_str(); // É necessario converter a string para um ponteiro de char, já que o regex.h foi feito para trabalhar com strings em c.
                 //Verifica-se a compatibilidade, caso haja match adiciona-se o resultado ao vetor de findings referente aquele arquivo.
                 if (regexec(data->preg_ptr, c_line, 0, 0, 0)==0){
