@@ -28,7 +28,6 @@ struct thr_data{
 /*FUNÇÕES AUXILIARES*/
 
 /* Função que lê o diretório passado pelo usuário, salvando o nome dos arquivos que precisam ser processados num vetor de strings
-   TODO: É NECESSÁRIO PODER CONTROLAR QUANDO A BUSCA É RECURSIVA QUANDO NÃO, POR QUE ISSO DEVERIA SER OPÇÃO DO USUARIO.
 */
 void get_files(const string &path, vector<string> &files, const bool show_hidden = false){
     DIR *dir;
@@ -97,7 +96,7 @@ void *thr_func(void* arg) {
 
 
 /* FUNÇÃO PRINCIPAL */
-/* TODO: É PRECISO ALTERAR A LEITURA DOS ARGUMENTOS DE FORMA QUE    ELA RECEBA UM ARGUMENTO OPCIONAL QUE DEFINE SE A BUSCA DEVE SER RECURSIVA OU NÃO. ESSE ARGUMENTO DEVE ENTÃO SER REPASSADO PARA A FUNÇÃO DE LEITURA DE ARQUIVOS. */
+
 int main(int argc, char *argv[]) {
     if (argc < 4) {
         cout << "usage: pgrep <MAX_THREADS> <REGEX_PESQUISA> <CAMINHO_DO_DIRETORIO>\n";
@@ -133,8 +132,7 @@ int main(int argc, char *argv[]) {
     int resp_regex_comp;
 
     //Compila-se a regex de entrada. Como só existe uma única regex de busca, ela só precisa ser compilada uma única vez e sua versão compilada pode ser passada para todas a threads para comparação, economizando processamento:
-    //WARNING:AS CINCO LINHAS DE CÓDIGO A SEGUIR NÃO FORAM APROPRIADAMENTE TESTADAS AINDA. PROSSIGA COM CAUTELA.
-    resp_regex_comp=regcomp(&preg,REGEX,0);
+   resp_regex_comp=regcomp(&preg,REGEX,0);
     if(resp_regex_comp!=0){
         cerr << "error: regex compilation failed; please, verify you regex." << endl;
         return EXIT_FAILURE; //Caso a regex não possa ser compilada com sucesso o programa é encerrado, pois é impossível continuar assim.
@@ -158,8 +156,6 @@ int main(int argc, char *argv[]) {
 
     //As Threads são criadas e cada uma delas invoca a função de thread com os dados contidos em data. Caso a criação de alguma thread
     // falhe, o programa retorna um erro e é encerrado.
-    //TODO: TALVEZ FOSSE PRUDENTE MUDAR ISSO PARA QUE O PROGRAMA NÃO PARASSE CASO HOVESSE UMA FALHA NA CRIAÇÃO DE UMA THREAD. O IDEAL SERIA ATUALIZAR O NÚMERO DE MAX_THREADS, DECREMENTAR O i E NÃO RETORNAR FALHA. DE FORMA EUQ O PROGRAMA AINDA CONTINUARÁ RODANDO, MAS APENAS COM O NÚMERO DE THREADS QUE ELE FOI CAPAZ DE CRIAR. 
-
     int resp_creation;
     for(int i=0;i<MAX_THREADS;i++){
         if ((resp_creation = pthread_create(&thr[i], NULL, thr_func, &data))) {
@@ -177,21 +173,3 @@ int main(int argc, char *argv[]) {
 }
 
 
-//Uns lixinhos que o sub quer guardar por enquanto pra consultar depois:
-
-    // string line="oi";
-    // findings.at(0)->push_back(line);
-    // for (std::vector<vector<string>*>::const_iterator i = findings.begin(); i != findings.end(); ++i){
-    //     cout << (**i).size() << endl;
-    // }
-
-    //thrfunc:
-    // pthread_mutex_lock(&lock_cout);
-    // pthread_mutex_lock(&lock_indexes);
-    // int work_index=data->indexes_ptr->at(0);
-    // data->findings_ptr->at(0)->push_back("Wi");
-    // cout <<  data->findings_ptr->at(0)->back() << endl;
-    // cout << data->files_ptr->at(0) << endl;
-    // cout << "Olá eu sou uma thread! Eu estou viva e em breve morrerei." << endl;
-    // pthread_mutex_unlock(&lock_cout);
-    // pthread_mutex_unlock(&lock_indexes);
