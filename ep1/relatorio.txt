@@ -4,13 +4,10 @@ Ricardo Kojo
 
 	Durante o processo de planejamento cogitamos diversas ideias diferentes para 
 resolver o problema. Depois de alguns estudos e testes decidimos que a primeira 
-coisa que o programa faz é listar todos os arquivos de todos os diretórios. 
-Nenhum integrante do grupo já havia mexido com leitura de arquivos em C++, essa 
-foi a primeira dificuldade, que superamos rapidamente, estudando alguns códigos 
+coisa que o programa faz é listar todos os arquivos de todos os diretórios, colocando seus nomes e caminhos em uma estrutura para posterioemente ser percorrida pelas threads em busca de dos arquivos a serem processados. Nenhum integrante do grupo já havia mexido com leitura de arquivos em C++, essa foi a primeira dificuldade, que superamos rapidamente, estudando alguns códigos 
 encontrados na internet[1]. 
 	Outro passo importante seria o processamento de REGEX. Novamente, estudamos
-bastante pois nenhum membro do grupo tinha familiaridade com expressões 
-regulares.
+bastante pois nenhum membro do grupo tinha familiaridade com expressões regulares.
 	Com a lista feita o próximo passo é criar as threads. Estudando a 
 documentação do pthreads[2] conseguimos montar a base de nosso programa: cada 
 thread criada é responsável pela busca em um elemento da lista, desse modo, cada 
@@ -20,20 +17,21 @@ representa qual arquivo já foi visitado, seguindo a ordem da listagem de
 arquivos; quando uma thread acaba seu trabalho, ela tranca a saída padrão com um 
 mutex para printar o que foi encontrado, logo após, libera o mutex e busca o 
 próximo item da lista e começa sua busca nele. Quando a thread for pegar o 
-próximo arquivo e a lista estiver vazia, ela morre.  
+próximo arquivo e a lista estiver vazia, ela morre. 
+	Seguindo esse estrutura não faz sentido ter mais threads que o número de arquivos total, por isso o número de threads é adaptado para o número de arquivos caso o primeiro seja maior que o segundo. 
 	Testamos nosso programa em diversos diretórios, incluindo o repositório do 
 linux-iio[3], que tem 3.6 GB, e a média de duração foi de 15 minutos, utilizando
 8 threads; os testes foram realizados em um notebook Samsung NP550P5C-AD1BR 
 (Intel Core i7 3630QM 2.4GHz, 8GB DDR3) e a contagem de tempo foi feita 
 utilizando um relógio simples.
 
-	Observação: Ao testar strings simples, como cacatua, o funcionamento foi 
+	Ao testar strings simples, como cacatua, o funcionamento foi 
 normal. Mas ao testar regex mais complexas tivemos alguns problemas, 
 inicialmente. Regex's como \wvo, que deveria dar match com qualquer caractere 
 seguido de vo não retornava uma resposta apropriada. Ao imprimirmos o valor 
 recebido como argumento pelo programa, vimos que o valor recebido era 
 simplesmente wvo, sem a contra-barra. Acreditamos que isso seja um problema da 
-passagem do bash para o programa. Símboos como (, \ e { são próprios do bash e 
+passagem do bash para o programa. Símbolos como ( e \ são próprios do bash e 
 ele não entende o uso desses caracteres como os caracteres em si.
 	Por esse ser um problema na interpretação da string por parte do bash, não 
 achamos que seria possível ou necessário fazer qualquer tratamento em ralação a 
@@ -43,10 +41,11 @@ de neutralizá-lo: É possível escapar os caracteres especiais do bash adiciona
 Dessa maneira a regex \wvo deveria ser escrita como '\wvo' ou \\wvo. Ambas 
 alternativas foram testadas e funcionaram bem.
 	Caracteres como (  { ,  e . são considerados como suas aparições literais 
-mesmo dentro de aspas simples, para serem considerados como elementos sintéticos
+mesmo dentro de aspas simples, para serem considerados como elementos sintáticos
 da regex eles tem que ser precedidos de \ mas dessa vez apenas de uma unica e 
-não de duas, como seria o caso sem aspas simples.
+não de duas, como seria o caso sem aspas simples. Utilizamos como referência do que deveria ou não ser aceito a dcumentação sobre Regex Posix, presentes em [4].
 
 	[1] https://stackoverflow.com/questions/13129340/recursive-function-for-listing-all-files-in-sub-directories
 	[2]https://computing.llnl.gov/tutorials/pthreads/
 	[3]https://www.kernel.org/doc/html/v4.15/driver-api/iio/index.html
+	[4]https://www.regular-expressions.info/posix.html
