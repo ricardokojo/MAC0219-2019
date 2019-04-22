@@ -6,7 +6,7 @@ Ricardo Kojo    10295429
 resolver o problema. Depois de alguns estudos e testes, decidimos que a primeira 
 coisa que o programa faz é listar todos os arquivos de todos os diretórios, 
 colocando seus nomes e caminhos em uma estrutura para posteriormente ser percorrida 
-pelas threads em busca de dos arquivos a serem processados. Nenhum integrante do 
+pelas threads em busca dos arquivos a serem processados. Nenhum integrante do 
 grupo havia mexido com leitura de arquivos em C++, logo esta foi a primeira dificuldade. 
 Superamos rapidamente, estudando alguns códigos encontrados na internet[1]. 
     O segundo passo seria o processamento de REGEX. Novamente, estudamos bastante 
@@ -49,7 +49,7 @@ alternativas foram testadas e funcionaram bem.
 mesmo dentro de aspas simples. Para serem considerados como elementos sintáticos
 da regex eles tem que ser precedidos de "\" mas dessa vez apenas de uma única e 
 não de duas, como seria o caso sem aspas simples. Utilizamos como referência do 
-que deveria ou não ser aceito a dcumentação sobre Regex Posix[4].
+que deveria ou não ser aceito, a dcumentação sobre Regex Posix[4].
 
 	[1] https://stackoverflow.com/questions/13129340/recursive-function-for-listing-all-files-in-sub-directories
 	[2]https://computing.llnl.gov/tutorials/pthreads/
