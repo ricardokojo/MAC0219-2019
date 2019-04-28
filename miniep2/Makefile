@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -Wall -pedantic -g -O2 -flto
+CFLAGS = -Wall -pedantic -g -O2
 RM     = rm -rf
 print  = echo
 
