@@ -1,0 +1,34 @@
+Ricardo Hideki Hangai Kojo - 10295429
+
+
+Os testes para este MiniEP2 foram feitos em um desktop com:
+
+* Sistema Operacional => Ubuntu 19.04 Disco Dingo 64-bit
+* Processador => Ryzen 5 1600, 6 Cores, 12 Threads, 3.4 Ghz, 16MB de Cache L3, 3MB de Cache L2
+* Memória RAM => 8 GB Crucial Ballistix Sport LT, 2400MHz, Single-channel
+
+
+IMPLEMENTAÇÃO:
+
+
+
+DESAFIOS:
+
+Entender cache
+Entender indices da matriz
+
+1. Mostre, com embasamento estatístico, a variação de tempo entre matrix_dgemm_1
+e sua implementação de matrix_dgemm_0. Houve melhora no tempo de execução?
+Explique porque.
+
+
+
+2. Mostre, com embasamento estatístico, a variação de tempo entre matrix_dgemm_2
+e sua implementação de matrix_dgemm_1. Houve melhora no tempo de execução?
+Explique porque.
+
+
+
+3. Como você usou a blocagem para melhorar a velocidade da multiplicação de matrizes?
+
+
