@@ -27,6 +27,7 @@ void matrix_dgemm_0(unsigned n, double *restrict _C, double *restrict _A, double
     unsigned i, j, k;
 
     for (i = 0; i < n; ++i)
+    {
         for (j = 0; j < n; ++j)
         {
             double sum = 0;
@@ -34,6 +35,8 @@ void matrix_dgemm_0(unsigned n, double *restrict _C, double *restrict _A, double
                 sum += A(i, k)*B(k, j);
             C(i, j) = sum;
         }
+    }
+        
 
     #undef A
     #undef B
@@ -49,6 +52,17 @@ void matrix_dgemm_1(unsigned n, double *restrict _C, double *restrict _A, double
     /* Aqui você não deve usar blocagem. Seu código deve ser BEM mais rápido
      * que o anterior (cerca de 10x). */
     /* Seu código aqui. */
+    unsigned i, j, k;
+
+    for (i = 0; i < n; ++i)
+    {
+        for (k = 0; k < n; ++k)
+        {
+            double r = A(i, k);
+            for (j = 0; j < n; ++j)
+                C(i, j) += r * B(k, j);
+        }
+    }
 
     #undef A
     #undef B
@@ -67,6 +81,28 @@ void matrix_dgemm_2(unsigned n, double *restrict _C, double *restrict _A, double
      * apenas 1 segundo ou 2.
      */
     /* Seu código aqui. */
+    unsigned i, j, k, jj, kk, s;
+
+    if (n > 1024)
+        s = n / 4;
+    else
+        s = n / 2;
+
+    for (kk = 0; kk < n; kk += s)
+    {
+        for (jj = 0; jj < n; jj += s)
+        {
+            for (i = 0; i < n; ++i)
+            {
+                for (k = kk; k < (n > (kk+s) ? (kk+s) : n); ++k)
+                {
+                    double r = A(i, k);
+                    for (j = jj; j < (n > (jj+s) ? (jj+s) : n); ++j)
+                        C(i, j) += r * B(k, j);
+                }
+            }
+        }
+    }
 
     #undef A
     #undef B

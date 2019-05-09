@@ -1,0 +1,189 @@
+gcc  -Wall -pedantic -g -O2 -c matrix.c
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 63.697248s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 6.593700s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.682541s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 63.220010s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 6.234701s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.587355s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 60.525148s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 6.663199s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.610183s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 58.635916s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.763930s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.410042s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 59.883052s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.866340s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.669662s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 62.269344s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.944602s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.394697s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 61.187431s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.781536s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.419204s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -c matrix.c
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 60.071612s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.569825s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.088236s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 58.044204s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.530791s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.118510s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 61.107507s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 6.197545s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.246770s
+    Resultado OK!
+    Tempo OK!
+
+gcc  -Wall -pedantic -g -O2 -o test test.o matrix.o time_extra.o
+./test
+Executando dgemm_0...
+    Tempo gasto em matrix_dgemm_0: 60.100377s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_1...
+    Tempo gasto em matrix_dgemm_1: 5.811754s
+    Resultado OK!
+    Tempo OK!
+
+Executando dgemm_2...
+    Tempo gasto em matrix_dgemm_2: 5.263495s
+    Resultado OK!
+    Tempo OK!
+

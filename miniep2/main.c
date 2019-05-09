@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INVALID_ALG  4 /* Parâmetro algorithm não inicializado */
+#define INVALID_ALG  3 /* Parâmetro algorithm não inicializado */
 #define INVALID_SIZE 0 /* Tamanho da matriz não incializado */
 
 struct parsed_args
@@ -49,7 +49,7 @@ static struct parsed_args* parse_args(int argc, const char* argv[])
 /* Checa se os argumentos parseados são válidos */
 static bool validate_args(const struct parsed_args* args)
 {
-    if (args->matrix_size == INVALID_SIZE || args->algorithm > INVALID_ALG)
+    if (args->matrix_size == INVALID_SIZE || args->algorithm >= INVALID_ALG)
         return false;
     return true;
 }
@@ -103,8 +103,14 @@ int main(int argc, const char* argv[])
     matrix_fill_rand(n, A);
     matrix_fill_rand(n, B);
 
+    memset(C, 0x00, n*n*sizeof(*A));
+
     gettimeofday(&t1, NULL);
-    matrix_which_dgemm(args->algorithm, n, C, A, B);
+    if (!matrix_which_dgemm(args->algorithm, n, C, A, B))
+    {
+        printf("Erro: O algoritmo selecionado é invalido!\n");
+        return 3;
+    }
     gettimeofday(&t2, NULL);
 
     timeval_subtract(&t3, &t2, &t1);

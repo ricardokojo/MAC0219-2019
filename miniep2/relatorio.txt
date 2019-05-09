@@ -1,0 +1,70 @@
+Ricardo Hideki Hangai Kojo - 10295429
+
+
+Os testes para este MiniEP2 foram feitos em um desktop com:
+
+* Sistema Operacional => Ubuntu 19.04 Disco Dingo 64-bit
+* Processador => Ryzen 5 1600, 6 Cores, 12 Threads, 3.4 Ghz, 16MB de Cache L3, 3MB de Cache L2
+* Memória RAM => 8 GB Crucial Ballistix Sport LT, 2400MHz, Single-channel
+
+
+IMPLEMENTAÇÃO:
+
+
+
+DESAFIOS:
+
+Entender cache
+Entender indices da matriz
+
+
+TESTES REALIZADOS:
+
+Para este MiniEP2 foram realizados diversos testes com os diferentes algoritmos, com matrizes de 1024x1024 e 2048x2048, e com diversos tamanhos de bloco:
+
+* A tabela a seguir representa os testes feitos usando o comando `make test`. Ao total, foram feitos 10 testes e foi calculada a média para cada algoritmo:
+
+    +-------------------------------------------------------------+
+    |          | matrix_dgemm_0 | matrix_dgemm_1 | matrix_dgemm_2 |
+    +----------+----------------+----------------+----------------|
+    | Teste  1 |     63.697248s |      6.593700s |      5.682541s |
+    | Teste  2 |     63.220010s |      6.234701s |      5.587355s |
+    | Teste  3 |     60.525148s |      6.663199s |      5.610183s |
+    | Teste  4 |     58.635916s |      5.763930s |      5.410042s |
+    | Teste  5 |     59.883052s |      5.866340s |      5.669662s |
+    | Teste  6 |     62.269344s |      5.944602s |      5.394697s |
+    | Teste  7 |     61.187431s |      5.781536s |      5.419204s |
+    | Teste  8 |     60.071612s |      5.569825s |      5.088236s |
+    | Teste  9 |     58.044204s |      5.530791s |      5.118510s |
+    | Teste 10 |     61.107507s |      6.197545s |      5.246770s |
+    +----------+----------------+----------------+----------------+
+    |   Média  |     60.864147s |      6.014617s |      5.422720s |
+    +----------+----------------+----------------+----------------+
+
+* A tabela a seguir representa os testes feitos usando o `./main` para matrizes de tamanho {1024x1024, 2048x2048} e algoritmos {0, 1}. Ao total, foram feitos 30 testes de cada, mas a tabela mostra apenas as **médias de tempo**:
+
+    +-----------------------------------------------------+
+    | Algoritmo /       | matrix_dgemm_0 | matrix_dgemm_1 | 
+    | Tamanho da Matriz |                |                |
+    +-------------------+----------------+----------------+
+    |    1024 x 1024    |     6.6735766s |      0.711549s |
+    |    2048 x 2048    |     63.578609s |      6.149208s |
+    +-------------------+----------------+----------------+
+
+* A tabela a seguir representa os testes feitos usando o `./main` para matrizes de tamanho {1024x1024, 2048x2048}, e algoritmo {2} com {2, 4, 8, 16} blocos. Ao total, foram feitos 30 testes de cada, mas a tabela mostra apenas as **médias de tempo**:
+
+1. Mostre, com embasamento estatístico, a variação de tempo entre matrix_dgemm_1
+e sua implementação de matrix_dgemm_0. Houve melhora no tempo de execução?
+Explique porque.
+
+
+
+2. Mostre, com embasamento estatístico, a variação de tempo entre matrix_dgemm_2
+e sua implementação de matrix_dgemm_1. Houve melhora no tempo de execução?
+Explique porque.
+
+
+
+3. Como você usou a blocagem para melhorar a velocidade da multiplicação de matrizes?
+
+
