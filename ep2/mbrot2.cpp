@@ -98,10 +98,16 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 	float d_y = (c1_i - c0_i) / (float) h;
 	bool mandel = 1;
 	int max_t=0;
+	cout <<"w "<< w << endl;
+	cout << "h " << h << endl;
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
 			mandel = 1;
+			cout << "y_comp" << c0_i + (y * d_y) << endl;
+			cout << "x_comp" << c0_r + (x * d_x) << endl;
+
 			c = (c0_r + (x * d_x), c0_i + (y * d_y));
+			cout << "c"<< c << endl;
 			last=0;
 			for (int t = 1; t < iteractions; ++t) {
 				current = last * last + c;
@@ -118,6 +124,13 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 			}
 		}
 	}
+
+	for (int y = 0; y < h; ++y) {
+		for (int x = 0; x < w; ++x) {
+			buffer_image[y*w + x]=buffer_image[y*w + x]/ (float) max_t;
+		}
+	}
+
 	return buffer_image;
 }
 
@@ -133,9 +146,10 @@ int main(int argc, char *argv[])
 	// buffer[6]=0.6;
 	// buffer[7]=0.7;
 	// buffer[8]=0.8;
-	float* buffer=mbrot_func(0.5, -0.4,-0.1,-0.7, 100, 100,100);
+	float* buffer=mbrot_func( 0.011,110,-0.802, -0.177, 1000,1000,1000);
 	string file_name="testinho.png";
-	return printImage(file_name,100,100, buffer);
+	cout << buffer[100000] << endl;
+	return printImage(file_name,1000,1000, buffer);
 }
 
 
