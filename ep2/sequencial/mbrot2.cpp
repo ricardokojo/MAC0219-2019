@@ -105,9 +105,6 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
 			mandel = 1;
-			//cout << "y_comp" << c0_i + (y * d_y) << endl;
-			//cout << "x_comp" << c0_r + (x * d_x) << endl;
-
 			c.real(c0_r + (x * d_x));
 			c.imag(c0_i + (y * d_y));
 			//cout << "c"<< c << endl;
