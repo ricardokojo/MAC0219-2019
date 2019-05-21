@@ -9,7 +9,7 @@ using namespace std;
 
 #define ITERATIONS 1000
 
-inline void setColorValue(png_byte *ptr, float val){
+inline void setColorValue(png_byte *ptr, double val){
 	int v = (int)(val * 767);
 	if (v < 0) v = 0;
 	if (v > 767) v = 767;
@@ -26,7 +26,7 @@ inline void setColorValue(png_byte *ptr, float val){
 	}
 }
 
-int printImage(string file_name, int w, int h, float* buffer_image){
+int printImage(string file_name, int w, int h, double* buffer_image){
 	
 	FILE *file = NULL;
 	png_structp image_ptr = NULL;
@@ -86,18 +86,18 @@ int printImage(string file_name, int w, int h, float* buffer_image){
 return status-1;
 }
 
-float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, int iteractions){
+double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, int h, int iteractions){
 	//r is for real, i for imaginary
 	
-	float *buffer_image = (float *) malloc(w * h * sizeof(float));
+	double *buffer_image = (double *) malloc(w * h * sizeof(double));
 	if (buffer_image == NULL) {
 		cerr << "Falha ao criar o Buffer da imagem." << endl;
 		return NULL;}
-	complex<float> current=0;
-	complex<float> last = 0;
-	complex<float> c = 0;
-	float d_x = (c1_r - c0_r) / (float) w;
-	float d_y = (c1_i - c0_i) / (float) h;
+	complex<double> current=0;
+	complex<double> last = 0;
+	complex<double> c = 0;
+	double d_x = (c1_r - c0_r) / (double) w;
+	double d_y = (c1_i - c0_i) / (double) h;
 	bool mandel = 1;
 	int max_t=0;
 	cout <<"w "<< w << endl;
@@ -105,19 +105,19 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
 			mandel = 1;
-			cout << "y_comp" << c0_i + (y * d_y) << endl;
-			cout << "x_comp" << c0_r + (x * d_x) << endl;
+			//cout << "y_comp" << c0_i + (y * d_y) << endl;
+			//cout << "x_comp" << c0_r + (x * d_x) << endl;
 
 			c.real(c0_r + (x * d_x));
 			c.imag(c0_i + (y * d_y));
-			cout << "c"<< c << endl;
+			//cout << "c"<< c << endl;
 			last=0;
 			for (int t = 1; t < iteractions; ++t) {
 				current = last * last + c;
 				if (abs(current) > 2) {
 					mandel = 0;
 					if(t>max_t){max_t=t;}
-					buffer_image[y*w + x]= (float) t;
+					buffer_image[y*w + x]= (double) t;
 					break; // pintar baseado no t em que parou
 				}
 				last = current;
@@ -130,7 +130,7 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
-			buffer_image[y*w + x]=buffer_image[y*w + x]/ (float) max_t;
+			buffer_image[y*w + x]=buffer_image[y*w + x]/ (double) max_t;
 		}
 	}
 
@@ -139,7 +139,7 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 
 int main(int argc, char *argv[])
 {
-	// float *buffer = (float *) malloc(3 * 3 * sizeof(float));
+	// double *buffer = (double *) malloc(3 * 3 * sizeof(double));
 	// buffer[0]=0;
 	// buffer[1]=0.1;
 	// buffer[2]=0.2;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 	// buffer[6]=0.6;
 	// buffer[7]=0.7;
 	// buffer[8]=0.8;
-	float* buffer=mbrot_func( 0.011,110,-0.802, -0.177, 1000,1000,1000);
+	double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
 	string file_name="testinho.png";
 	cout << buffer[100000] << endl;
 	return printImage(file_name,1000,1000, buffer);
