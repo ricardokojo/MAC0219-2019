@@ -1,10 +1,10 @@
 CC=g++
 CCFLAGS=
-LDFLAGS=-lpthread
+LDFLAGS= -lpng
 
-mbrot: mbrot.cpp
+mbrot2: mbrot2.cpp
 	$(CC) $(CCFLAGS) $< -o $@ $(LDFLAGS)
 
 .PHONY: clean
 clean:
-	rm -f mbrot
+	rm -f mbrot2

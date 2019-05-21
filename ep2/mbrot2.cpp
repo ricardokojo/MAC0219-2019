@@ -87,6 +87,8 @@ return status-1;
 }
 
 float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, int iteractions){
+	//r is for real, i for imaginary
+	
 	float *buffer_image = (float *) malloc(w * h * sizeof(float));
 	if (buffer_image == NULL) {
 		cerr << "Falha ao criar o Buffer da imagem." << endl;
@@ -106,7 +108,8 @@ float* mbrot_func(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, 
 			cout << "y_comp" << c0_i + (y * d_y) << endl;
 			cout << "x_comp" << c0_r + (x * d_x) << endl;
 
-			c = (c0_r + (x * d_x), c0_i + (y * d_y));
+			c.real(c0_r + (x * d_x));
+			c.imag(c0_i + (y * d_y));
 			cout << "c"<< c << endl;
 			last=0;
 			for (int t = 1; t < iteractions; ++t) {
