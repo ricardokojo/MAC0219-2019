@@ -100,8 +100,6 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 	double d_y = (c1_i - c0_i) / (double) h;
 	bool mandel = 1;
 	int max_t=0;
-	cout <<"w "<< w << endl;
-	cout << "h " << h << endl;
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
 			mandel = 1;
@@ -134,22 +132,25 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 	return buffer_image;
 }
 
-int main(int argc, char *argv[])
-{
-	// double *buffer = (double *) malloc(3 * 3 * sizeof(double));
-	// buffer[0]=0;
-	// buffer[1]=0.1;
-	// buffer[2]=0.2;
-	// buffer[3]=0.3;
-	// buffer[4]=0.4;
-	// buffer[5]=0.5;
-	// buffer[6]=0.6;
-	// buffer[7]=0.7;
-	// buffer[8]=0.8;
-	double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
-	string file_name="testinho.png";
-	cout << buffer[100000] << endl;
-	return printImage(file_name,1000,1000, buffer);
+int main(int argc, char *argv[]){
+	if (argc < 9){
+		cout << " uso: mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>\n";
+		return 1;
+	}
+
+    double C0_REAL = double(atof(argv[1]));
+	double C0_IMAG = double(atof(argv[2]));
+	double C1_REAL = double(atof(argv[3]));
+	double C1_IMAG = double(atof(argv[4]));
+	int WIDTH = atoi(argv[5]);
+	int HEIGHT = atoi(argv[6]);
+	string CPU_GPU = argv[7];
+	int THREADS = atoi(argv[8]);
+ 	string SAIDA = argv[9];
+
+	double* buffer=mbrot_func( C0_REAL,C0_IMAG,C1_REAL,C1_IMAG,WIDTH,HEIGHT,ITERATIONS);
+	//double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
+	return printImage(SAIDA,WIDTH,HEIGHT, buffer);
 }
 
 
