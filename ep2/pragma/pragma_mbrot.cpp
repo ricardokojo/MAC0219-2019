@@ -69,8 +69,8 @@ int printImage(string file_name, int w, int h, double* buffer_image){
 
 		buffer_row = (png_bytep) malloc(3 * w * sizeof(png_byte));
 		int x, y;
-		for (y=0 ; y<h ; y++) {
-			for (x=0 ; x<w ; x++) {
+		for (int y=0 ; y<h ; y++) {
+			for (int x=0 ; x<w ; x++) {
 				setColorValue(&(buffer_row[x*3]), buffer_image[y*w + x]);}
 			png_write_row(image_ptr, buffer_row);
 		}
@@ -93,34 +93,31 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 	if (buffer_image == NULL) {
 		cerr << "Falha ao criar o Buffer da imagem." << endl;
 		return NULL;}
-	complex<double> current=0;
-	complex<double> last = 0;
-	complex<double> c = 0;
+
 	double d_x = (c1_r - c0_r) / (double) w;
 	double d_y = (c1_i - c0_i) / (double) h;
-	bool mandel = 1;
 	int max_t=0;
-	bool broken=0;
-	cout <<"w "<< w << endl;
-	cout << "h " << h << endl;
+
+	#pragma omp parallel for
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
-			mandel = 1;
-			//cout << "y_comp" << c0_i + (y * d_y) << endl;
-			//cout << "x_comp" << c0_r + (x * d_x) << endl;
+			complex<double> current=0;
+			complex<double> last = 0;
+			complex<double> c = 0;
+			bool mandel = 1;
 
+			mandel = 1;
 			c.real(c0_r + (x * d_x));
 			c.imag(c0_i + (y * d_y));
 			//cout << "c"<< c << endl;
 			last=0;
-			#pragma omp parallel for
-			for (int t = 1; t < iteractions && !broken; ++t) {
+			for (int t = 1; t < iteractions; ++t) {
 				current = last * last + c;
 				if (abs(current) > 2) {
 					mandel = 0;
 					if(t>max_t){max_t=t;}
 					buffer_image[y*w + x]= (double) t;
-					broken=1; // pintar baseado no t em que parou
+					break; // pintar baseado no t em que parou
 				}
 				last = current;
 			}
@@ -130,6 +127,7 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 		}
 	}
 
+	#pragma omp parallel for
 	for (int y = 0; y < h; ++y) {
 		for (int x = 0; x < w; ++x) {
 			buffer_image[y*w + x]=buffer_image[y*w + x]/ (double) max_t;
@@ -139,22 +137,26 @@ double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, in
 	return buffer_image;
 }
 
-int main(int argc, char *argv[])
-{
-	// double *buffer = (double *) malloc(3 * 3 * sizeof(double));
-	// buffer[0]=0;
-	// buffer[1]=0.1;
-	// buffer[2]=0.2;
-	// buffer[3]=0.3;
-	// buffer[4]=0.4;
-	// buffer[5]=0.5;
-	// buffer[6]=0.6;
-	// buffer[7]=0.7;
-	// buffer[8]=0.8;
-	double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
-	string file_name="testinho.png";
-	cout << buffer[100000] << endl;
-	return printImage(file_name,1000,1000, buffer);
+int main(int argc, char *argv[]){
+	if (argc < 9){
+		cout << " uso: mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>\n";
+		return 1;
+	}
+
+    double C0_REAL = double(atof(argv[1]));
+	double C0_IMAG = double(atof(argv[2]));
+	double C1_REAL = double(atof(argv[3]));
+	double C1_IMAG = double(atof(argv[4]));
+	int WIDTH = atoi(argv[5]);
+	int HEIGHT = atoi(argv[6]);
+	string CPU_GPU = argv[7];
+	int THREADS = atoi(argv[8]);
+ 	string SAIDA = argv[9];
+
+	double* buffer=mbrot_func( C0_REAL,C0_IMAG,C1_REAL,C1_IMAG,WIDTH,HEIGHT,ITERATIONS);
+	//double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
+	return printImage(SAIDA,WIDTH,HEIGHT, buffer);
 }
+
 
 
