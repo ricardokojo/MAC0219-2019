@@ -4,6 +4,7 @@
 #include<complex>
 #include<png.h>
 #include<string>
+#include<omp.h>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ inline void setColorValue(png_byte *ptr, double val){
 	}
 }
 
-int printImage(string file_name, int w, int h, double* buffer_image){
+int printImage_cpu(string file_name, int w, int h, double* buffer_image){
 	
 	FILE *file = NULL;
 	png_structp image_ptr = NULL;
@@ -86,7 +87,7 @@ int printImage(string file_name, int w, int h, double* buffer_image){
 return status-1;
 }
 
-double* mbrot_func(double c0_r, double c0_i, double c1_r, double c1_i, int w, int h, int iteractions){
+double* mbrot_func_cpu(double c0_r, double c0_i, double c1_r, double c1_i, int w, int h, int iteractions){
 	//r is for real, i for imaginary
 	
 	double *buffer_image = (double *) malloc(w * h * sizeof(double));
@@ -153,10 +154,23 @@ int main(int argc, char *argv[]){
 	int THREADS = atoi(argv[8]);
  	string SAIDA = argv[9];
 
-	double* buffer=mbrot_func( C0_REAL,C0_IMAG,C1_REAL,C1_IMAG,WIDTH,HEIGHT,ITERATIONS);
-	//double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
-	return printImage(SAIDA,WIDTH,HEIGHT, buffer);
-}
+ 	int max_threads;
+ 	if(CPU_GPU=="CPU"){
+ 		max_threads=omp_get_max_threads();
+ 		if(THREADS>max_threads){
+ 			clog << "*Warning:Nº de Threads pedido maior que o máximo aparentemente suportado.*" << endl;
+ 		}
+ 		omp_set_num_threads(THREADS);
+ 		double* buffer=mbrot_func_cpu( C0_REAL,C0_IMAG,C1_REAL,C1_IMAG,WIDTH,HEIGHT,ITERATIONS);
+ 		return printImage_cpu(SAIDA,WIDTH,HEIGHT, buffer);
+ 	}
+
+ 	else{
+ 		cerr << "Erro: Modo GPU ainda não implementado." << endl;
+ 		return -100;
+ 	}
+	
+} //double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
 
 
 
