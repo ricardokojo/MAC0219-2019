@@ -69,9 +69,9 @@ int printImage_cpu(string file_name, int w, int h, double* buffer_image){
 		png_write_info(image_ptr, info_ptr);
 
 		buffer_row = (png_bytep) malloc(3 * w * sizeof(png_byte));
-		int x, y;
-		for (int y=0 ; y<h ; y++) {
-			for (int x=0 ; x<w ; x++) {
+		int y,x;
+		for (y=0 ; y<h ; y++) {
+			for (x=0 ; x<w ; x++) {
 				setColorValue(&(buffer_row[x*3]), buffer_image[y*w + x]);}
 			png_write_row(image_ptr, buffer_row);
 		}
