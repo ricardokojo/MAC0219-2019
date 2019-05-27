@@ -84,27 +84,7 @@ int main(int argc, char *argv[])
 
 	
 
-	for (int y = 0; y < HEIGHT; ++y) {
-		for (int x = 0; x < WIDTH; ++x) {
-			mandel = 1;
-			c = (C0_REAL + (x * d_x), C0_IMAG + (y * d_y)); 
-			for (int t = 1; t < ITERATIONS; ++t) {
-				current = last * last + c;
-				if (std::abs(current) > 2) {
-					mandel = 0;
 
-					break; // pintar baseado no t em que parou
-				}
-				buffer[y* WIDTH + x]= t/(float) ITERATIONS;
-				std::cout << t/ (float) ITERATIONS << "\n";
-				last = current;
-			}
-
-			if (mandel) {
-				buffer[y * WIDTH + x]=0;
-			}
-		}
-	}
 
 	png_bytep row = (png_bytep) malloc(3 * WIDTH * sizeof(png_byte));
 
