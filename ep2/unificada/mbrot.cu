@@ -275,16 +275,16 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 	{
 		int y = i / w;
 		int x = i % w;
-		cuFloatComplex current = make_cuFloatComplex(0, 0);
-		cuFloatComplex last = make_cuFloatComplex(0, 0);
-		cuFloatComplex c = make_cuFloatComplex(c0_r + (x * d_x), c0_i + (y * d_y));
-		cuFloatComplex abs = make_cuFloatComplex(0, 0);
+		cuDoubleComplex current = make_cuDoubleComplex(0, 0);
+		cuDoubleComplex last = make_cuDoubleComplex(0, 0);
+		cuDoubleComplex c = make_cuDoubleComplex((double)c0_r + (x * d_x), (double) c0_i + (y * d_y));
+		double abs = 0.0;
 		bool mandel = 1;
 
 		for (int t = 1; t < iteractions; ++t)
 		{
-			current = cuCadd(cuCmul(last, last), c)
-			abs = cuCabs(current)
+			current = cuCadd(cuCmul(last, last), c);
+			abs = cuCabs(current);
 			if (abs > 2)
 			{
 				mandel = 0;
@@ -349,9 +349,12 @@ int main(int argc, char *argv[])
 		if (buffer_image == NULL)
 		{
 			cerr << "Falha ao criar o Buffer da imagem." << endl;
-			return NULL;
+			return -1;
 		}
 		mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
+		cout << buffer_image[20] << endl;
+		cudaDeviceSynchronize();
+		cudaFree(buffer_image);
 		return printImage_gpu(SAIDA, WIDTH, HEIGHT, buffer_image);
 	}
 
