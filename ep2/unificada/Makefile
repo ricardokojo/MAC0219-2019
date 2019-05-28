@@ -1,8 +1,8 @@
-CC=g++
+CC=nvcc
 CCFLAGS=
-LDFLAGS= -lpng -fopenmp 
+LDFLAGS= -lpng -fopenmp
 
-mbrot: mbrot.cpp
+mbrot: mbrot.cu
 	$(CC) $(CCFLAGS) $< -o $@ $(LDFLAGS)
 
 .PHONY: clean
