@@ -1,10 +1,12 @@
 CC=nvcc
 CCFLAGS=
-LDFLAGS= -lpng -fopenmp
+LDFLAGS=-Xcompiler -fopenmp -lpng
 
 mbrot: mbrot.cu
-	$(CC) $(CCFLAGS) $< -o $@ $(LDFLAGS)
+	$(CC) $(CCFLAGS) -o $@ $(LDFLAGS) $<
 
 .PHONY: clean
 clean:
 	rm -f mbrot
+
+# nvcc -o mbrot -Xcompiler -fopenmp -lpng mbrot.cu 
