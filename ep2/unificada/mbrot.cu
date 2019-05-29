@@ -1,11 +1,10 @@
-#include <stdio.h>
 #include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
-#include <complex>
-#include <png.h>
 #include <string>
 #include <omp.h>
-#include <cuComplex.h>
+#include <png.h>
+#include <thrust/complex.h>
 
 using namespace std;
 
@@ -268,9 +267,8 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 	float d_y = (c1_i - c0_i) / (float)h;
 	int max_t = 0;
 
-
-	  int index = blockIdx.x * blockDim.x + threadIdx.x;
-  int stride = blockDim.x * gridDim.x;
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+	int stride = blockDim.x * gridDim.x;
 	//printf("threadIDX: %d\t",index);
 	//printf("blockDim: %d\t",stride);
 
@@ -286,14 +284,14 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 		last.imag(0);
 		thrust::complex<double> c;
 		c.real((double)c0_r + (x * d_x));
-		c.imag((double) c0_i + (y * d_y));
+		c.imag((double)c0_i + (y * d_y));
 		//printf("%d ",i);
 		double abs = 0.0;
 		bool mandel = 1;
 
 		for (int t = 1; t < iteractions; ++t)
 		{
-			current = last*last +c;
+			current = last * last + c;
 			abs = thrust::abs(current);
 			if (abs > 2)
 			{
@@ -364,12 +362,12 @@ int main(int argc, char *argv[])
 		mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
 		cudaDeviceSynchronize();
 		cout << buffer_image[20] << endl;
- 		cout << buffer_image[1000] << endl;
- 		cout << buffer_image[2000] << endl;
- 		cout << buffer_image[3245] << endl;
+		cout << buffer_image[1000] << endl;
+		cout << buffer_image[2000] << endl;
+		cout << buffer_image[3245] << endl;
 		cudaFree(buffer_image);
 		return 0;
-		return printImage_gpu(SAIDA, WIDTH, HEIGHT, buffer_image);
+		// return printImage_gpu(SAIDA, WIDTH, HEIGHT, buffer_image);
 	}
 
 } //double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
