@@ -135,20 +135,20 @@ float *mbrot_func_cpu(float c0_r, float c0_i, float c1_r, float c1_i, int w, int
 	{
 		for (int x = 0; x < w; ++x)
 		{
-			complex<float> current = 0;
-			complex<float> last = 0;
-			complex<float> c = 0;
-			bool mandel = 1;
-
-			mandel = 1;
+			thrust::complex<float> current;
+			current.real(0);
+			current.imag(0);
+			thrust::complex<float> last;
+			last.real(0);
+			last.imag(0);
+			thrust::complex<float> c ;
 			c.real(c0_r + (x * d_x));
 			c.imag(c0_i + (y * d_y));
-			//cout << "c"<< c << endl;
-			last = 0;
+			bool mandel = 1;
 			for (int t = 1; t < iteractions; ++t)
 			{
 				current = last * last + c;
-				if (abs(current) > 2)
+				if (thrust::abs(current) > 2)
 				{
 					mandel = 0;
 					buffer_image[y * w + x] = (float)t;
@@ -182,7 +182,6 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 
 	float d_x = (c1_r - c0_r) / (float)w;
 	float d_y = (c1_i - c0_i) / (float)h;
-	int max_t = 0;
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	int stride = blockDim.x * gridDim.x;
@@ -200,8 +199,8 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 		last.real(0);
 		last.imag(0);
 		thrust::complex<float> c;
-		c.real((float)c0_r + (x * d_x));
-		c.imag((float)c0_i + (y * d_y));
+		c.real(c0_r + (x * d_x));
+		c.imag(c0_i + (y * d_y));
 		//printf("%d ",i);
 		float abs = 0.0;
 		bool mandel = 1;
@@ -213,10 +212,6 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 			if (abs > 2)
 			{
 				mandel = 0;
-				if (t > max_t)
-				{
-					max_t = t;
-				}
 				buffer_image[y * w + x] = (float)t;
 				break; // pintar baseado no t em que parou
 			}
