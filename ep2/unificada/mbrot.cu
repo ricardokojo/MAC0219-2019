@@ -141,7 +141,7 @@ float *mbrot_func_cpu(float c0_r, float c0_i, float c1_r, float c1_i, int w, int
 			thrust::complex<float> last;
 			last.real(0);
 			last.imag(0);
-			thrust::complex<float> c ;
+			thrust::complex<float> c;
 			c.real(c0_r + (x * d_x));
 			c.imag(c0_i + (y * d_y));
 			bool mandel = 1;
@@ -163,18 +163,17 @@ float *mbrot_func_cpu(float c0_r, float c0_i, float c1_r, float c1_i, int w, int
 		}
 	}
 
-// #pragma omp parallel for
-// 	for (int y = 0; y < h; ++y)
-// 	{
-// 		for (int x = 0; x < w; ++x)
-// 		{
-// 			buffer_image[y * w + x] = buffer_image[y * w + x] / (double)max_t;
-// 		}
-// 	}
+	// #pragma omp parallel for
+	// 	for (int y = 0; y < h; ++y)
+	// 	{
+	// 		for (int x = 0; x < w; ++x)
+	// 		{
+	// 			buffer_image[y * w + x] = buffer_image[y * w + x] / (double)max_t;
+	// 		}
+	// 	}
 
 	return buffer_image;
 }
-
 
 __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, int w, int h, int iteractions, float *buffer_image)
 {
@@ -192,15 +191,19 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 	{
 		int y = i / w;
 		int x = i % w;
+		
 		thrust::complex<float> current;
 		current.real(0);
 		current.imag(0);
+		
 		thrust::complex<float> last;
 		last.real(0);
 		last.imag(0);
+		
 		thrust::complex<float> c;
 		c.real(c0_r + (x * d_x));
 		c.imag(c0_i + (y * d_y));
+		
 		//printf("%d ",i);
 		float abs = 0.0;
 		bool mandel = 1;
@@ -222,38 +225,41 @@ __global__ void mbrot_func_gpu(float c0_r, float c0_i, float c1_r, float c1_i, i
 			buffer_image[y * w + x] = 0.0;
 		}
 	}
-
 }
 
-float maximize(float* array, int array_size){
-	float max=757.0;
+float maximize(float *array, int array_size)
+{
+	float max = 757.0;
 
-	for(int i=0; i<array_size;i++){
-		if(array[i]>max){
-			max=array[i];
+	for (int i = 0; i < array_size; i++)
+	{
+		if (array[i] > max)
+		{
+			max = array[i];
 			// printf("hmmm: %d -> %f",i, max);
 		}
 	}
-return max;
+	return max;
 }
 
-void normalizeBuffer_cpu(float *buffer_image, int buffer_size, float buffer_max){
-	#pragma omp parallel for
-	for(int i=0; i<buffer_size; i++){
-		buffer_image[i]=buffer_image[i]/buffer_max;
+void normalizeBuffer_cpu(float *buffer_image, int buffer_size, float buffer_max)
+{
+#pragma omp parallel for
+	for (int i = 0; i < buffer_size; i++)
+	{
+		buffer_image[i] = buffer_image[i] / buffer_max;
 	}
 }
 
-__global__ void normalizeBuffer_gpu(float* buffer_image, int buffer_size, float buffer_max){
-		int index = blockIdx.x * blockDim.x + threadIdx.x;
-		int stride = blockDim.x * gridDim.x;
-		for(int i=index; i<buffer_size; i+=stride){
-			buffer_image[i]=buffer_image[i]/buffer_max;
+__global__ void normalizeBuffer_gpu(float *buffer_image, int buffer_size, float buffer_max)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+	int stride = blockDim.x * gridDim.x;
+	for (int i = index; i < buffer_size; i += stride)
+	{
+		buffer_image[i] = buffer_image[i] / buffer_max;
 	}
 }
-
-
-
 
 int main(int argc, char *argv[])
 {
@@ -281,14 +287,11 @@ int main(int argc, char *argv[])
 		{
 			clog << "*Warning:Nº de Threads pedido maior que o máximo aparentemente suportado.*" << endl;
 		}
+		
 		omp_set_num_threads(THREADS);
 		float *buffer_image = mbrot_func_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS);
-		cout << buffer_image[20] << endl;
-		cout << buffer_image[1000] << endl;
-		cout << buffer_image[2000] << endl;
-		cout << buffer_image[3245] << endl;
-		cout << maximize(buffer_image, WIDTH*HEIGHT);
-		normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+		
+		normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
 		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
 	}
 	else
@@ -296,26 +299,23 @@ int main(int argc, char *argv[])
 		int blockSize = THREADS;
 		int numBlocks = (WIDTH * HEIGHT + blockSize - 1) / blockSize;
 		float *buffer_image;
+		
 		cudaMallocManaged(&buffer_image, WIDTH * HEIGHT * sizeof(float));
 		if (buffer_image == NULL)
 		{
 			cerr << "Falha ao criar o Buffer da imagem." << endl;
 			return -1;
 		}
+		
 		mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
-		//./mbrot  0.404583165379 0.234141469049 0.404612286758 0.234170590428 1000 1000 GPU 256 teste.jpeg
 		cudaDeviceSynchronize();
-		cout << buffer_image[20] << endl;
-		cout << buffer_image[1000] << endl;
-		cout << buffer_image[2000] << endl;
-		cout << buffer_image[3245] << endl;
-		cout << maximize(buffer_image, WIDTH*HEIGHT);
-		normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+		
+		normalizeBuffer_gpu<<<numBlocks, blockSize>>>(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
 		cudaDeviceSynchronize();
-		int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		
+		int result = printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
 		cudaFree(buffer_image);
+		
 		return result;
-
 	}
-
-} //double* buffer=mbrot_func( 0.404583165379,0.234141469049,0.404612286758,0.234170590428, 1000,1000,1000);
+}
