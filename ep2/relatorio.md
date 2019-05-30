@@ -14,15 +14,14 @@ Os testes para o EP2 foram realizados utilizando a máquina `dota` do IME-USP, v
 
 Para verificar o algoritmo sequencial, foram feitos os seguintes testes:
 
-| Tamanho da Matriz | Tempo médio | int max  | int min
-| ----------------: | ----------: | -------:  | --------:
-|         1024x1024 |    21.3754s | 21.3966  | 21.3542
-|         2048x2048 |    84.9706s |85.0355  | 84.9056
-|         4096x4096 |   340.7568s |341.0329 |340.4807
-|         8192x8192 |   1360.418s |1360.4954 | 1360.3406
+| Tamanho da Matriz | Tempo médio |   int max |   int min |
+| ----------------: | ----------: | --------: | --------: |
+|         1024x1024 |    21.3754s |   21.3966 |   21.3542 |
+|         2048x2048 |    84.9706s |   85.0355 |   84.9056 |
+|         4096x4096 |   340.7568s |  341.0329 |  340.4807 |
+|         8192x8192 |   1360.418s | 1360.4954 | 1360.3406 |
 
 O intervalo de confiança é de **95%**.
-
 
 Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
 
@@ -30,47 +29,69 @@ Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** te
 
 Para verificar o algoritmo utilizando **OpenMP**, foram feitos os seguintes testes:
 
-| Threads / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 | 
-| --------------------------: | --------: | --------: | --------: | --------: |
-|                           2 |    10.82s |  43.0185s | 176.1984s |  691.563s |
-|       Intervalo de confiança    |[10.8008,10.8392] | [,43.0017,43.0354] | [176.1630,176.2338] | [689.9426,693.1834]
-|                           4 |   8.9343s |  35.6331s |  141.242s |  577.898s |
-|Intervalo de confiança |                             [,8.9245,8.9441 ]|[35.6233,35.6429]|[141.2116,141.2724]|[575.9827,579.8147]
-|                           8 |   5.5181s |  21.8835s |  86.5784s |  363.174s |
-|Intervalo de confiança |                            [ 5.5115,5.5247]|[21.8723,21.8946]|[86.5457,86.6111]|[362.3140,364.0340]
-|                          16 |   3.1523s |  12.4134s |  47.6483s |  197.799s |
-|Intervalo de confiança|                          [3.1401,3.1645	]|[12.3797,12.4472]|[47.601247.6954]|[196.9795,198.6185]
+| Threads / Tamanho da Matriz |         1024x1024 |         2048x2048 |           4096x4096 |           8192x8192 |
+| --------------------------: | ----------------: | ----------------: | ------------------: | ------------------: |
+|                           2 |            10.82s |          43.0185s |           176.1984s |            691.563s |
+|      Intervalo de confiança | [10.8008,10.8392] | [,3.0017,43.0354] | [176.1630,176.2338] | [689.9426,693.1834] |
+|                           4 |           8.9343s |          35.6331s |            141.242s |            577.898s |
+|      Intervalo de confiança | [,8.9245,8.9441 ] | [35.6233,35.6429] | [141.2116,141.2724] | [575.9827,579.8147] |
+|                           8 |           5.5181s |          21.8835s |            86.5784s |            363.174s |
+|      Intervalo de confiança |  [ 5.5115,5.5247] | [21.8723,21.8946] |   [86.5457,86.6111] | [362.3140,364.0340] |
+|                          16 |           3.1523s |          12.4134s |            47.6483s |            197.799s |
+|      Intervalo de confiança |  [3.1401,3.1645	] | [12.3797,12.4472] |   [47.6012,47.6954] | [196.9795,198.6185] |
 
-Os valores na tabela representam o tempo médio retirado após 10 testes para cada combinação.
+Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
 
 ### CUDA
 
 Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes testes:
 
-| Threads por bloco / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
-| ------------------------------------: | --------: | --------: | --------: | --------: |
-|                                    32 |    3.518s |   3.2431s |   4.3964s |   6.8959s |
-|Intervalo de confiança|      [3.5021,3.5338] | [3.2311,3.2551]|[4.4168,4.4168]|[6.7977,6.9941]
-|                                    64 |   3.5156s |   3.2201s |   4.2585s |    5.804s |
-|Intervalo de confiança|[3.4938,3.5373]|[3.2091,3.2311]|[4.2418,4.2752]|[5.6894,5.9186]
-|100 |   3.4771s |   3.2337s |    4.2844 |   5.5748s |
-|Intervalo de confiança| [3.4536,3.5006]|[3.2078,3.2596]|[4.2416,4.3271]|[5.5416,5.6080]
-|                                   128 |    3.498s |   3.3085s |   4.6489s |   6.1702s |
-|Intervalo de confiança|[3.4795,3.5168]|[3.2856,3.3314]|[4.6182,4.6796]|[6.0538,6.2866]
-|                                   256 |   3.5196s |   4.0145s |   4.6415s |   5.9616s |
-|Intervalo de confiança|[3.5014,3.5378]|[3.7230,4.3060]|[4.6180,4.6650]|[5.8096,6.1135]
+| Threads por bloco / Tamanho da Matriz |       1024x1024 |       2048x2048 |       4096x4096 |       8192x8192 |
+| ------------------------------------: | --------------: | --------------: | --------------: | --------------: |
+|                                    32 |          3.518s |         3.2431s |         4.3964s |         6.8959s |
+|                Intervalo de confiança | [3.5021,3.5338] | [3.2311,3.2551] | [4.4168,4.4168] | [6.7977,6.9941] |
+|                                    64 |         3.5156s |         3.2201s |         4.2585s |          5.804s |
+|                Intervalo de confiança | [3.4938,3.5373] | [3.2091,3.2311] | [4.2418,4.2752] | [5.6894,5.9186] |
+|                                   100 |         3.4771s |         3.2337s |          4.2844 |         5.5748s |
+|                Intervalo de confiança | [3.4536,3.5006] | [3.2078,3.2596] | [4.2416,4.3271] | [5.5416,5.6080] |
+|                                   128 |          3.498s |         3.3085s |         4.6489s |         6.1702s |
+|                Intervalo de confiança | [3.4795,3.5168] | [3.2856,3.3314] | [4.6182,4.6796] | [6.0538,6.2866] |
+|                                   256 |         3.5196s |         4.0145s |         4.6415s |         5.9616s |
+|                Intervalo de confiança | [3.5014,3.5378] | [3.7230,4.3060] | [4.6180,4.6650] | [5.8096,6.1135] |
+
+Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
+
 ### Comparação
 
 Observamos que tanto a paralelização na CPU quanto a paralelização utilizando a GPU geraram uma diminuição do tempo se em comparação com outras versões para todos os tamanhos de imagem de entrada testados. Mais do que isso, observou-se que a taxa de crescimento de tempo em função do tamanho da imagem é muito maior na versão sequencial do que na paralelizada utilizando-se openMP, que por sua vez é significativamente maior na versão em GPU.
 
 Para exmplificar esses comportamentos plotou-se um gráfico comparando o desempenho das diferentes versões em função do tamanho da imagem de entrada. Os número de threads utilizados no gráfico foram 16 threads para a varesão com OpenMP e 256 para a versão de CUDA. Além disso calcularam-se também os fatores de *speedup* médios do openMP em relação a versão sequencial (6.9 x mais rápico), do Cuda em relação ao sequencial (22.8 x mais rápido), todos calculados para o tamanho de imagem 8192x8192.
 
-Além disso observou-se a tendência esperada de que o aumento  tanto do número de threads, quanto do número de threads por bloco gera um melhora de desempenho dentros dos intervalos testados. Obbservou-se que o ganho da gpu quando se utiliza o número de threads por bloco não múltiplo de 32 é mais dúbio do que quando se usa um número múltiplo de 32. 
+![Gráfico comparando algoritmo sequencial, c/ OpenMP e c/ CUDA](agr_ta_certo.png)
+
+Além disso observou-se a tendência esperada de que o aumento  tanto do número de threads, quanto do número de threads por bloco gera um melhora de desempenho dentros dos intervalos testados. Obbservou-se que o ganho da gpu quando se utiliza o número de threads por bloco não múltiplo de 32 é mais dúbio do que quando se usa um número múltiplo de 32.
 
 Para 64 e 100 threads por bloco por exemplo, para as imagens menores é difícil visualizar um ganho de 100 em relação a 64, mesmo 100 correspondendo a um número maior de threads. Este comportamento está ilustrado no gráfico a seguir:
 
-INSIRA O GRAF_DO_SUB AQUI.
+![Gráfico de comparação de threads por bloco usando CUDA](graf_do_sub.png)
 
+## Imagens geradas
+
+> Imagem para as coordenadas `[-2, -1, 1, 1]`, algoritmo sequencial, 1024x1024:
+
+![Imagem para as coordenadas -2 -1 1 1, algoritmo sequencial, 1024x1024](testes/EP2-TESTES/seq-2-1-1-1-2014.png)
+
+> Imagem para as coordenadas `[-2, -1, 1, 1]`, algoritmo c/ OpenMP 16 threads, 1024x1024
+
+![Imagem para as coordenadas -2 -1 1 1, algoritmo c/ OpenMP, 1024x1024](testes/EP2-TESTES/pragma-1024-16.png)
+
+> Imagem para as coordenadas `[-2, -1, 1, 1]`, algoritmo c/ CUDA 64 threads por bloco, 1024x1024
+
+![Imagem para as coordenadas -2 -1 1 1, algoritmo CUDA, 1024x1024](testes/EP2-TESTES/cuda-1024-64.png)
+
+> Imagem para as coordenadas `[-2, 1.3, 0.6, -1.3]`, algoritmo OpenMP, 1024x1024
+
+![Imagem para as coordenadas -2 -1 1 1, algoritmo OpenMP, 1000x1000](unificada/teste_grandecpu.png)
 
 ## Explicação da Solução
 
