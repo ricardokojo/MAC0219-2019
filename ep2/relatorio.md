@@ -61,7 +61,10 @@ Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes test
 |Intervalo de confiança|[3.5014,3.5378]|[3.7230,4.3060]|[4.6180,4.6650]|[5.8096,6.1135]
 ### Comparação
 
-* O algoritmo usando 
+Observamos que os tempos de execução sobem muito mais rápido no algoritmo sequencial, e extremamente devagar no algoritmo em CUDA. Construímos um gráfico para ilustrar, os dados de OpenMP foram retirados das medidas de 16 threads, e os de CUDA 256. 
+INSERE AQUI O GRAFICO_SHOW
+Apesar de algumas flutuações, o tempo tende a crescer junto com o tamanho da imagem, nos três algoritmos. Nos algoritmos paralelos, a quantidade de threads também influencia no tempo de execução.
+
 
 ## Explicação da Solução
 
