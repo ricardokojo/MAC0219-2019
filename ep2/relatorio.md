@@ -14,14 +14,15 @@ Os testes para o EP2 foram realizados utilizando a máquina `dota` do IME-USP, v
 
 Para verificar o algoritmo sequencial, foram feitos os seguintes testes:
 
-| Tamanho da Matriz | Tempo médio |
-| ----------------: | ----------: |
-|         1024x1024 |    21.3754s |
-|         2048x2048 |    84.9706s |
-|         4096x4096 |   340.7568s |
-|         8192x8192 |   1360.418s |
+| Tamanho da Matriz | Tempo médio | int max  | int min
+| ----------------: | ----------: | -------:  | --------:
+|         1024x1024 |    21.3754s | 21.3966  | 21.3542
+|         2048x2048 |    84.9706s |85.0355  | 84.9056
+|         4096x4096 |   340.7568s |341.0329 |340.4807
+|         8192x8192 |   1360.418s |1360.4954 | 1360.3406
 
 O intervalo de confiança é de **95%**.
+
 
 Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
 
@@ -29,12 +30,16 @@ Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** te
 
 Para verificar o algoritmo utilizando **OpenMP**, foram feitos os seguintes testes:
 
-| Threads / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
+| Threads / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 | 
 | --------------------------: | --------: | --------: | --------: | --------: |
 |                           2 |    10.82s |  43.0185s | 176.1984s |  691.563s |
+|       Intervalo de confiança    |[10.8008,10.8392] | [,43.0017,43.0354] | [176.1630,176.2338] | [689.9426,693.1834]
 |                           4 |   8.9343s |  35.6331s |  141.242s |  577.898s |
+|Intervalo de confiança |                             [,8.9245,8.9441 ]|[35.6233,35.6429]|[141.2116,141.2724]|[575.9827,579.8147]
 |                           8 |   5.5181s |  21.8835s |  86.5784s |  363.174s |
+|Intervalo de confiança |                            [ 5.5115,5.5247]|[21.8723,21.8946]|[86.5457,86.6111]|[362.3140,364.0340]
 |                          16 |   3.1523s |  12.4134s |  47.6483s |  197.799s |
+|Intervalo de confiança|                          [3.1401,3.1645	]|[12.3797,12.4472]|[47.601247.6954]|[196.9795,198.6185]
 
 Os valores na tabela representam o tempo médio retirado após 10 testes para cada combinação.
 
@@ -45,11 +50,15 @@ Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes test
 | Threads por bloco / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
 | ------------------------------------: | --------: | --------: | --------: | --------: |
 |                                    32 |    3.518s |   3.2431s |   4.3964s |   6.8959s |
+|Intervalo de confiança|      [3.5021,3.5338] | [3.2311,3.2551]|[4.4168,4.4168]|[6.7977,6.9941]
 |                                    64 |   3.5156s |   3.2201s |   4.2585s |    5.804s |
-|                                   100 |   3.4771s |   3.2337s |    4.2844 |   5.5748s |
+|Intervalo de confiança|[3.4938,3.5373]|[3.2091,3.2311]|[4.2418,4.2752]|[5.6894,5.9186]
+|100 |   3.4771s |   3.2337s |    4.2844 |   5.5748s |
+|Intervalo de confiança| [3.4536,3.5006]|[3.2078,3.2596]|[4.2416,4.3271]|[5.5416,5.6080]
 |                                   128 |    3.498s |   3.3085s |   4.6489s |   6.1702s |
+|Intervalo de confiança|[3.4795,3.5168]|[3.2856,3.3314]|[4.6182,4.6796]|[6.0538,6.2866]
 |                                   256 |   3.5196s |   4.0145s |   4.6415s |   5.9616s |
-
+|Intervalo de confiança|[3.5014,3.5378]|[3.7230,4.3060]|[4.6180,4.6650]|[5.8096,6.1135]
 ### Comparação
 
 * O algoritmo usando 
