@@ -1,18 +1,55 @@
 # Relatório EP2 - MAC0219
 
 Bruna Bazaluk - 9797002
+
 Felipe Serras - 8539986
+
 Ricardo Kojo - 10295429
 
 ## Coleta de Informações
 
+Os testes para o EP2 foram realizados utilizando a máquina `dota` do IME-USP, via `ssh`.
+
 ### Sequencial
+
+Para verificar o algoritmo sequencial, foram feitos os seguintes testes:
+
+| Tamanho da Matriz | Tempo médio |
+| ----------------: | ----------: |
+|         1024x1024 |             |
+|         2048x2048 |             |
+|         4096x4096 |             |
+|         8192x8192 |             |
+
+Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
 
 ### OpenMP
 
+Para verificar o algoritmo utilizando **OpenMP**, foram feitos os seguintes testes:
+
+| Threads / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
+| --------------------------: | --------: | --------: | --------: | --------: |
+|                           2 |           |           |           |           |
+|                           4 |           |           |           |           |
+|                           8 |           |           |           |           |
+|                          16 |           |           |           |           |
+
+Os valores na tabela representam o tempo médio retirado após 10 testes para cada combinação.
+
 ### CUDA
 
+Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes testes:
+
+| Threads por bloco / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
+| ------------------------------------: | --------: | --------: | --------: | --------: |
+|                                     2 |           |           |           |           |
+|                                     4 |           |           |           |           |
+|                                     8 |           |           |           |           |
+|                                    16 |           |           |           |           |
+
 ### Comparação
+
+* O algoritmo usando 
 
 ## Explicação da Solução
 
