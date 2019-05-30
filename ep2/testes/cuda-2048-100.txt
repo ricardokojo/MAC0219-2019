@@ -1,0 +1,39 @@
+real    0m3.407s
+user    0m0.380s
+sys     0m1.524s
+
+real    0m3.296s
+user    0m0.300s
+sys     0m1.552s
+
+real    0m3.206s
+user    0m0.308s
+sys     0m1.496s
+
+real    0m3.318s
+user    0m0.332s
+sys     0m1.524s
+
+real    0m3.361s
+user    0m0.400s
+sys     0m1.540s
+
+real    0m2.933s
+user    0m0.308s
+sys     0m1.468s
+
+real    0m3.203s
+user    0m0.316s
+sys     0m1.460s
+
+real    0m3.178s
+user    0m0.340s
+sys     0m1.536s
+
+real    0m3.208s
+user    0m0.296s
+sys     0m1.508s
+
+real    0m3.227s
+user    0m0.304s
+sys     0m1.512s
