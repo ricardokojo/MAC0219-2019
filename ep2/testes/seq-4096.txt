@@ -1,20 +1,20 @@
-real	5m38.568s
-user	5m38.364s
-sys		0m0.120s
+real    5m38.568s
+user    5m38.364s
+sys	    0m0.120s
 
-real	5m41.539s
-user	5m41.360s
-sys		0m0.108s
+real    5m41.539s
+user    5m41.360s
+sys	    0m0.108s
 
-real	5m42.234s
-user	5m42.012s
-sys		0m0.136s
+real    5m42.234s
+user    5m42.012s
+sys	    0m0.136s
 
-real	5m40.440s
-user	5m40.260s
-sys		0m0.100s
+real    5m40.440s
+user    5m40.260s
+sys	    0m0.100s
 
-real	5m41.003s
-user	5m40.720s
-sys		0m0.156s
+real    5m41.003s
+user    5m40.720s
+sys	    0m0.156s
 
