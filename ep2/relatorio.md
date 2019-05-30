@@ -16,10 +16,12 @@ Para verificar o algoritmo sequencial, foram feitos os seguintes testes:
 
 | Tamanho da Matriz | Tempo médio |
 | ----------------: | ----------: |
-|         1024x1024 |             |
-|         2048x2048 |             |
-|         4096x4096 |             |
-|         8192x8192 |             |
+|         1024x1024 |    21.3754s |
+|         2048x2048 |    84.9706s |
+|         4096x4096 |   340.7568s |
+|         8192x8192 |   1360.418s |
+
+O intervalo de confiança é de **95%**.
 
 Para as matrizes de tamanho *1024x1024* e *2048x2048* foram realizados **10** testes cada. Para matriz de tamanho *4096x4096*, foram realizados **5** testes. Para matriz de tamanho *8192x8192*, foram realizados **3** testes.
 
@@ -29,10 +31,10 @@ Para verificar o algoritmo utilizando **OpenMP**, foram feitos os seguintes test
 
 | Threads / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
 | --------------------------: | --------: | --------: | --------: | --------: |
-|                           2 |           |           |           |           |
-|                           4 |           |           |           |           |
-|                           8 |           |           |           |           |
-|                          16 |           |           |           |           |
+|                           2 |    10.82s |  43.0185s | 176.1984s |  691.563s |
+|                           4 |   8.9343s |  35.6331s |  141.242s |  577.898s |
+|                           8 |   5.5181s |  21.8835s |  86.5784s |  363.174s |
+|                          16 |   3.1523s |  12.4134s |  47.6483s |  197.799s |
 
 Os valores na tabela representam o tempo médio retirado após 10 testes para cada combinação.
 
@@ -42,16 +44,18 @@ Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes test
 
 | Threads por bloco / Tamanho da Matriz | 1024x1024 | 2048x2048 | 4096x4096 | 8192x8192 |
 | ------------------------------------: | --------: | --------: | --------: | --------: |
-|                                     2 |           |           |           |           |
-|                                     4 |           |           |           |           |
-|                                     8 |           |           |           |           |
-|                                    16 |           |           |           |           |
+|                                    32 |    3.518s |   3.2431s |   4.3964s |   6.8959s |
+|                                    64 |   3.5156s |   3.2201s |   4.2585s |    5.804s |
+|                                   100 |   3.4771s |   3.2337s |    4.2844 |   5.5748s |
+|                                   128 |    3.498s |   3.3085s |   4.6489s |   6.1702s |
+|                                   256 |   3.5196s |   4.0145s |   4.6415s |   5.9616s |
 
 ### Comparação
 
 * O algoritmo usando 
 
 ## Explicação da Solução
+
 
 
 ## Desafios
