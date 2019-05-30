@@ -61,9 +61,15 @@ Para verificar o algoritmo utilizando o **CUDA**, foram feitos os seguintes test
 |Intervalo de confiança|[3.5014,3.5378]|[3.7230,4.3060]|[4.6180,4.6650]|[5.8096,6.1135]
 ### Comparação
 
-Observamos que os tempos de execução sobem muito mais rápido no algoritmo sequencial, e extremamente devagar no algoritmo em CUDA. Construímos um gráfico para ilustrar, os dados de OpenMP foram retirados das medidas de 16 threads, e os de CUDA 256. 
-INSERE AQUI O GRAFICO_SHOW
-Apesar de algumas flutuações, o tempo tende a crescer junto com o tamanho da imagem, nos três algoritmos. Nos algoritmos paralelos, a quantidade de threads também influencia no tempo de execução.
+Observamos que tanto a paralelização na CPU quanto a paralelização utilizando a GPU geraram uma diminuição do tempo se em comparação com outras versões para todos os tamanhos de imagem de entrada testados. Mais do que isso, observou-se que a taxa de crescimento de tempo em função do tamanho da imagem é muito maior na versão sequencial do que na paralelizada utilizando-se openMP, que por sua vez é significativamente maior na versão em GPU.
+
+Para exmplificar esses comportamentos plotou-se um gráfico comparando o desempenho das diferentes versões em função do tamanho da imagem de entrada. Os número de threads utilizados no gráfico foram 16 threads para a varesão com OpenMP e 256 para a versão de CUDA. Além disso calcularam-se também os fatores de *speedup* médios do openMP em relação a versão sequencial (6.9 x mais rápico), do Cuda em relação ao sequencial (22.8 x mais rápido), todos calculados para o tamanho de imagem 8192x8192.
+
+Além disso observou-se a tendência esperada de que o aumento  tanto do número de threads, quanto do número de threads por bloco gera um melhora de desempenho dentros dos intervalos testados. Obbservou-se que o ganho da gpu quando se utiliza o número de threads por bloco não múltiplo de 32 é mais dúbio do que quando se usa um número múltiplo de 32. 
+
+Para 64 e 100 threads por bloco por exemplo, para as imagens menores é difícil visualizar um ganho de 100 em relação a 64, mesmo 100 correspondendo a um número maior de threads. Este comportamento está ilustrado no gráfico a seguir:
+
+INSIRA O GRAF_DO_SUB AQUI.
 
 
 ## Explicação da Solução
@@ -72,7 +78,7 @@ Para criar o algoritmo da nossa solução, seguimos o que foi explicado no enunc
 
 Guardávamos os valores necessários para a geração da imagem no vetor `buffer_image` que simulava a matriz. Caso o valor pertencesse ao conjunto, guardávamos o valor `0`. Caso não pertencesse, o vetor recebia o número da iteração em que a condição `|z_j| <= 2` foi excedida.
 
-Após calcular os valores para todos os pontos da matriz, normalizamos o vetor `buffer_image` e geramos a imagem utilizando a biblioteca `libpng`.
+Após calcular os valores para todos os pontos da matriz, normalizamos o vetor `buffer_image` e geramos a imagem utilizando a biblioteca `libpng`. A conversão do valor normalizado de intensidade da bufferimage para o valor de cor foi realizada com base na função apresentada em http://www.labbookpages.co.uk/software/imgProc/libPNG.html.
 
 Para as versões em OpenMP e CUDA, o algoritmo é praticamente o mesmo, fazendo apenas os ajustes necessários para fazer uso destas tecnologias. Para OpenMP, foram colocados dois `pragmas`: um no loop que percorre a matriz e calcula a sequência, e outro no loop que normaliza o vetor `buffer_image`. Para CUDA, usamos o `buffer_image` como variável compartilhada, fazendo tanto o cálculo da sequência quanto a normalização em GPU.
 
