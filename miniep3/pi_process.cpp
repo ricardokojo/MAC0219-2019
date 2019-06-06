@@ -87,10 +87,10 @@ int main(int argc, char const *argv[])
     {
       list_of_pids[i] = pid;
     }
-    else // error -> clear memory
+    else // error -> clear memory and die
     {
-      free(tasks);
       free(list_of_pids);
+      free(tasks);
       munmap(pi_by_4, sizeof(double));
       DIE("Fork failed\n");
     }
@@ -99,11 +99,12 @@ int main(int argc, char const *argv[])
   // Call waitpid() for each PID
   for (int i = 0; i < NUM_PROCESSOS; ++i)
   {
-    waitpid(pid, &status, WUNTRACED);
+    waitpid(list_of_pids[i], &status, WUNTRACED);
   }
 
   printf("%.12f\n", pi_by_4[0] * 4);
 
+  free(list_of_pids);
   free(tasks);
   munmap(pi_by_4, sizeof(double));
   return 0;
