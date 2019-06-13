@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 9)
 	{
-		cout << " uso: mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>\n";
+		cout << " uso: mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <SAIDA>\n";
 		return 1;
 	}
 	//Instanciam-se variaǘeis relativas aos parâmetros de entrada:
@@ -292,9 +292,7 @@ int main(int argc, char *argv[])
 	int WIDTH = atoi(argv[5]);
 	int HEIGHT = atoi(argv[6]);
 	string CPU_GPU = argv[7];
-	int THREADS = atoi(argv[8]);
-	string SAIDA = argv[9];
-	int max_threads;
+	string SAIDA = argv[8];
 
 	int  numtasks, rank, len, rc; 
 	char hostname[MPI_MAX_PROCESSOR_NAME];
@@ -304,51 +302,48 @@ int main(int argc, char *argv[])
 	MPI_Get_processor_name(hostname, &len);
 	cout <<"Number of tasks= " << numtasks << " My rank= " << rank <<  " Running on " << hostname << endl;
 	if(rank==0){
-
-	
-	//Verifica-se se é o caso de execução com GPU ou CPU:
-	if (CPU_GPU == "CPU")
-	{
-		//Caso seja CPU verifica-se se o número de threads pedido está acima do aceito pela cpu:
-		max_threads = omp_get_max_threads();
-		if (THREADS > max_threads)
+		//Verifica-se se é o caso de execução com GPU ou CPU:
+		if (CPU_GPU == "CPU")
 		{
-			clog << "*Warning:Nº de Threads pedido maior que o máximo aparentemente suportado.*" << endl;
-		}
-		omp_set_num_threads(THREADS); //Define-se o numero de threads a ser utilizado pelo openmp
+			//Caso seja CPU verifica-se se o número de threads pedido está acima do aceito pela cpu:
+			max_threads = omp_get_max_threads();
+			if (THREADS > max_threads)
+			{
+				clog << "*Warning:Nº de Threads pedido maior que o máximo aparentemente suportado.*" << endl;
+			}
+			omp_set_num_threads(THREADS); //Define-se o numero de threads a ser utilizado pelo openmp
 
-		//Produz-se o buffer:
-		float *buffer_image = mbrot_func_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS);
-		//Normaliza-se a imagem:
-		normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
-		//Gera a imagem e retorna:
-		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
-	}
-	else
-	{
-		//Innstancia-se o número de threads e o número de blocos:
-		int blockSize = THREADS;
-		int numBlocks = (WIDTH * HEIGHT + blockSize - 1) / blockSize;
-		float *buffer_image;
-		cudaMallocManaged(&buffer_image, WIDTH * HEIGHT * sizeof(float)); //Aloca memória da gpu para a imagem de buffer
-		if (buffer_image == NULL)
-		{
-			cerr << "Falha ao criar o Buffer da imagem." << endl;
-			return -1;
+			//Produz-se o buffer:
+			float *buffer_image = mbrot_func_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS);
+			//Normaliza-se a imagem:
+			normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+			//Gera a imagem e retorna:
+			return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
 		}
-		//Gera-se a imagem de  buffer:
-		mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
-		cudaDeviceSynchronize(); //Espera-se o fim dos cálculos para continuação da parte sequenciaç
-		//Normaliza o Buffer:
-		normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
-		cudaDeviceSynchronize(); //Espera mais um poquinho.
-		int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
-		cudaFree(buffer_image); //Libera a memória do cuda alocada para o buffer
-		return result; //Hora de dizer tchau.
+		else
+		{
+			//Innstancia-se o número de threads e o número de blocos:
+			int blockSize = THREADS;
+			int numBlocks = (WIDTH * HEIGHT + blockSize - 1) / blockSize;
+			float *buffer_image;
+			cudaMallocManaged(&buffer_image, WIDTH * HEIGHT * sizeof(float)); //Aloca memória da gpu para a imagem de buffer
+			if (buffer_image == NULL)
+			{
+				cerr << "Falha ao criar o Buffer da imagem." << endl;
+				return -1;
+			}
+			//Gera-se a imagem de  buffer:
+			mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
+			cudaDeviceSynchronize(); //Espera-se o fim dos cálculos para continuação da parte sequenciaç
+			//Normaliza o Buffer:
+			normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+			cudaDeviceSynchronize(); //Espera mais um poquinho.
+			int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
+			cudaFree(buffer_image); //Libera a memória do cuda alocada para o buffer
+			return result; //Hora de dizer tchau.
+		}
+	} else {
+		return 0;
 	}
 }
-else{
-	return 0;
-}
 
-} 
