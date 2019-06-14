@@ -1,0 +1,22 @@
+Compilação:
+nvcc -g -c  cpu.cpp
+nvcc -g -c  gpu.cu
+nvcc -g -c  img_util.cpp
+mpic++ -g -c  main.cpp
+
+Linkedição:
+
+nvcc -o dmbrot -Xcompiler -fopenmp -lpng -lmpi cpu.o gpu.o img_util.o main.o
+
+
+Erros que eu obtive (só após a inclusão das funções relacionadas ao mpi no arquivo main.cpp)
+
+main.o: In function `MPI::Intracomm::Intracomm()':
+/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h:25: undefined reference to `MPI::Comm::Comm()'
+main.o: In function `MPI::Intracomm::Intracomm(ompi_communicator_t*)':
+/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h:23: undefined reference to `MPI::Comm::Comm()'
+main.o: In function `MPI::Op::Init(void (*)(void const*, void*, int, MPI::Datatype const&), bool)':
+/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h:122: undefined reference to `ompi_mpi_cxx_op_intercept'
+main.o:(.data.rel.ro._ZTVN3MPI3WinE[_ZTVN3MPI3WinE]+0x48): undefined reference to `MPI::Win::Free()'
+main.o:(.data.rel.ro._ZTVN3MPI8DatatypeE[_ZTVN3MPI8DatatypeE]+0x78): undefined reference to `MPI::Datatype::Free()'
+collect2: error: ld returned 1 exit status
