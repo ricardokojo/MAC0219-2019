@@ -6,17 +6,11 @@ mpic++ -g -c  main.cpp
 
 Linkedição:
 
-nvcc -o dmbrot -Xcompiler -fopenmp -lpng -lmpi cpu.o gpu.o img_util.o main.o
+nvcc -o  dmbrot -Xcompiler -fopenmp -lpng -lmpi cpu.o gpu.o img_util.o main.o -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include -I/usr/lib/x86_64-linux-gnu/openmpi/include -L/usr//lib -L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi_cxx -lmpi
+
+Comentário importante do SUB sobre a linkedição:
+todas essas bibliotecas a mais são as bibliotecas de mpi. só adicionar o -lmpi não funcionou na brucutuIV, que era o computador que eu estav usando. Eu consegui descobrir essas bibliotecas tentando compilar usando o mpic++ com a opção -showme
+Com essa opção ele printa todas as linkedições que ele adiciona pra fazer o mpi funcionar. Aí o que eu fiz foi copiar esses links e adicionar eles na chamada do nvcc (que já sabe como chamar o cuda). A única alteração que eu tive que fazer foi remover a opção -pthread, que não é necessária pro nvcc.
+Para outros computadores, imagino que os links serão diferentes, por a localização das bibliotecas do mpi serão diferentes, mas o processo pra descobrir deve ser o mesmo: chamar o mpic++ com a opção -showme e depois passar esses argumentos para o nvcc.
 
 
-Erros que eu obtive (só após a inclusão das funções relacionadas ao mpi no arquivo main.cpp)
-
-main.o: In function `MPI::Intracomm::Intracomm()':
-/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/intracomm.h:25: undefined reference to `MPI::Comm::Comm()'
-main.o: In function `MPI::Intracomm::Intracomm(ompi_communicator_t*)':
-/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/intracomm_inln.h:23: undefined reference to `MPI::Comm::Comm()'
-main.o: In function `MPI::Op::Init(void (*)(void const*, void*, int, MPI::Datatype const&), bool)':
-/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/ompi/mpi/cxx/op_inln.h:122: undefined reference to `ompi_mpi_cxx_op_intercept'
-main.o:(.data.rel.ro._ZTVN3MPI3WinE[_ZTVN3MPI3WinE]+0x48): undefined reference to `MPI::Win::Free()'
-main.o:(.data.rel.ro._ZTVN3MPI8DatatypeE[_ZTVN3MPI8DatatypeE]+0x78): undefined reference to `MPI::Datatype::Free()'
-collect2: error: ld returned 1 exit status
