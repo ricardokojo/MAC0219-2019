@@ -73,7 +73,7 @@ __global__ void normalizeBuffer_gpu(float* buffer_image, int buffer_size, float 
 	}
 }
 
-int main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, int THREADS, string SAIDA){
+float* main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, int THREADS, string SAIDA){
 		int blockSize = THREADS;
 		int numBlocks = (WIDTH * HEIGHT + blockSize - 1) / blockSize;
 		float *buffer_image;
@@ -81,15 +81,15 @@ int main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WID
 		if (buffer_image == NULL)
 		{
 			cerr << "Falha ao criar o Buffer da imagem." << endl;
-			return -1;
+			return buffer_image;
 		}
 		//Gera-se a imagem de  buffer:
 		mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
 		cudaDeviceSynchronize(); //Espera-se o fim dos cálculos para continuação da parte sequenciaç
 		//Normaliza o Buffer:
-		normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+		// normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
 		cudaDeviceSynchronize(); //Espera mais um poquinho.
-		int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
+		//int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
 		cudaFree(buffer_image); //Libera a memória do cuda alocada para o buffer
-		return result; //Hora de dizer tchau.
+		return buffer_image; //Hora de dizer tchau.
 }

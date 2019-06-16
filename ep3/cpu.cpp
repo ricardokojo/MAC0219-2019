@@ -18,7 +18,7 @@ using namespace std;
 inline void setColorValue(png_byte *ptr, double val);
 int printImage(string file_name, int w, int h, float *buffer_image);
 float maximize(float* array, int array_size);
-int main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, int THREADS, string SAIDA);
+float* main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, int THREADS, string SAIDA);
 
 
 //Função de geração da imagem de buffer para cpu:
@@ -92,7 +92,7 @@ void normalizeBuffer_cpu(float *buffer_image, int buffer_size, float buffer_max)
 
 
 //Função principal:
-int main_cpu(float C0_REAL,float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, string CPU_GPU, int THREADS, string SAIDA)
+float* main_cpu(float C0_REAL,float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, string CPU_GPU, int THREADS, string SAIDA)
 {
 
 	//Instanciam-se variaǘeis relativas aos parâmetros de entrada:
@@ -113,9 +113,10 @@ int main_cpu(float C0_REAL,float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDT
 		//Produz-se o buffer:
 		float *buffer_image = mbrot_func_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS);
 		//Normaliza-se a imagem:
-		normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+		//normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
 		//Gera a imagem e retorna:
-		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		//return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		return buffer_image;
 	}
 	else
 	{
