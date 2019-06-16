@@ -90,6 +90,8 @@ float* main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int 
 		// normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
 		cudaDeviceSynchronize(); //Espera mais um poquinho.
 		//int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
+		float *buffer_image_cpu = (float *)malloc(WIDTH * HEIGHT * sizeof(float));
+		cudaMemcpy(buffer_image_cpu,buffer_image,WIDTH * HEIGHT * sizeof(float),cudaMemcpyDeviceToHost);
 		cudaFree(buffer_image); //Libera a memória do cuda alocada para o buffer
-		return buffer_image; //Hora de dizer tchau.
+		return buffer_image_cpu; //Hora de dizer tchau.
 }
