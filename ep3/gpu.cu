@@ -1,3 +1,10 @@
+//********************************************//
+// MAC0219/5742 - EP3                         //
+// EP3 - Mandelbrot                           //
+// Bruna Bazaluk, Felipe Serras, Ricardo Kojo //
+//********************************************//
+//*Arquivo que contem as funções para processamento em gpu.*//
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +15,7 @@ using namespace std;
 
 #define ITERATIONS 1000
 
+//Estabelece os Headers de arquivos externos a serem utilizados:
 inline void setColorValue(png_byte *ptr, double val);
 int printImage(string file_name, int w, int h, float *buffer_image);
 float maximize(float *array, int array_size);
@@ -77,6 +85,7 @@ __global__ void normalizeBuffer_gpu(float *buffer_image, int buffer_size, float 
 	}
 }
 
+//Função principal para o processamento em GPU:
 float *main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, int THREADS, string SAIDA)
 {
 	int blockSize = THREADS;
@@ -94,11 +103,9 @@ float *main_gpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int 
 	mbrot_func_gpu<<<numBlocks, blockSize>>>(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS, buffer_image);
 	cudaDeviceSynchronize(); // Espera-se o fim dos cálculos para continuação da parte sequencia
 
-	// Normaliza o Buffer:
-	// normalizeBuffer_gpu<<<numBlocks,blockSize>>>(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
+
 	cudaDeviceSynchronize(); // Espera mais um poquinho.
 
-	// int result=printImage(SAIDA, WIDTH, HEIGHT, buffer_image); //Gera-se a imagem
 	float *buffer_image_cpu = (float *)malloc(WIDTH * HEIGHT * sizeof(float));
 	cudaMemcpy(buffer_image_cpu, buffer_image, WIDTH * HEIGHT * sizeof(float), cudaMemcpyDeviceToHost);
 	cudaFree(buffer_image); // Libera a memória do cuda alocada para o buffer

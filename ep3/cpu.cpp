@@ -3,6 +3,7 @@
 // EP3 - Mandelbrot                           //
 // Bruna Bazaluk, Felipe Serras, Ricardo Kojo //
 //********************************************//
+//*Arquivo que contem as funções para processamento em cpu.*//
 
 #include <iostream>
 #include <stdio.h>
@@ -15,6 +16,7 @@ using namespace std;
 
 #define ITERATIONS 1000 // Número máximo de iterações no cálculo da pertencência ao conjunto de Mandelbrot
 
+//Estabelece os Headers de arquivos externos a serem utilizados:
 inline void setColorValue(png_byte *ptr, double val);
 int printImage(string file_name, int w, int h, float *buffer_image);
 float maximize(float *array, int array_size);
@@ -87,7 +89,7 @@ void normalizeBuffer_cpu(float *buffer_image, int buffer_size, float buffer_max)
 	}
 }
 
-// Função principal:
+// Função principal para o caso CPU. Ela chama a função principal da GPU se for o caso:
 float *main_cpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int WIDTH, int HEIGHT, string CPU_GPU, int THREADS, string SAIDA)
 {
 
@@ -107,15 +109,12 @@ float *main_cpu(float C0_REAL, float C0_IMAG, float C1_REAL, float C1_IMAG, int 
 
 		// Produz-se o buffer:
 		float *buffer_image = mbrot_func_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, ITERATIONS);
-		// Normaliza-se a imagem:
-		// normalizeBuffer_cpu(buffer_image,WIDTH*HEIGHT,maximize(buffer_image,WIDTH*HEIGHT));
-		// Gera a imagem e retorna:
-		// return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		//Retorna:
 		return buffer_image;
 	}
 	else
 	{
+		//Caso o processamento deva ser feito na GPU a função chama a função principal da GPU:
 		return main_gpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, THREADS, SAIDA);
-		// Instancia-se o número de threads e o número de blocos:
 	}
 }

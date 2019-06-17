@@ -1,3 +1,11 @@
+//********************************************//
+// MAC0219/5742 - EP3                         //
+// EP3 - Mandelbrot                           //
+// Bruna Bazaluk, Felipe Serras, Ricardo Kojo //
+//********************************************//
+//*Arquivo que contem as funções para adequação e savamento das imagens e outras funções auxiliares
+//que são usada em ambos os conjuntos de demais funções (GPU e CPU) *//
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
