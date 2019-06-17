@@ -42,6 +42,15 @@ int main(int argc, char *argv[])
 	string SAIDA = argv[9];
 	MPI_Status Stat;
 
+	if(numtasks==1){
+		float *buffer_image = main_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH,HEIGHT, CPU_GPU, THREADS, SAIDA);
+		normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
+		MPI_Finalize();
+		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+
+	}
+	else{
+
 	if (rank == numtasks - 1)
 	{
 		// Instanciam-se variáveis relativas aos parâmetros de entrada:
@@ -105,4 +114,5 @@ int main(int argc, char *argv[])
 	}
 	MPI_Finalize();
 	return 0;
+}
 }
