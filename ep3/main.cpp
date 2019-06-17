@@ -42,17 +42,20 @@ int main(int argc, char *argv[])
 	string SAIDA = argv[9];
 	MPI_Status Stat;
 
+	if(numtasks>HEIGHT)
+	{
+		numtasks=HEIGHT;
+	}
+
 	if(numtasks==1){
 		float *buffer_image = main_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH,HEIGHT, CPU_GPU, THREADS, SAIDA);
 		normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
 		MPI_Finalize();
 		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
-
 	}
 	else{
-
-	if (rank == numtasks - 1)
-	{
+		if (rank == numtasks - 1)
+		{
 		// Instanciam-se variáveis relativas aos parâmetros de entrada:
 		int chunck = HEIGHT / (numtasks - 1);
 		int chunck_resto = HEIGHT % (numtasks - 1);
@@ -62,7 +65,7 @@ int main(int argc, char *argv[])
 			float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
 			float C0_IMAG_resto = C0_IMAG + rank * chunck * DeltaY;
 			float C1_IMAG_resto = C0_IMAG_resto + (chunck_resto + 1) * DeltaY;
-			cout << rank << ": " << C0_IMAG_resto << " -> " << C1_IMAG_resto << endl;
+			//cout << rank << ": " << C0_IMAG_resto << " -> " << C1_IMAG_resto << endl;
 			result = main_cpu(C0_REAL, C0_IMAG_resto, C1_REAL, C1_IMAG_resto, WIDTH, chunck + 1, CPU_GPU, THREADS, SAIDA);
 			// cout << "master result " << result << endl;}
 			// 	for(int j=0; j<chunck_resto*WIDTH;j++){
@@ -99,6 +102,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+		if(rank<numtasks){
 		int chunck = HEIGHT / (numtasks - 1);
 		float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
 		float C0_IMAG_processo = C0_IMAG + rank * chunck * DeltaY;
@@ -107,11 +111,11 @@ int main(int argc, char *argv[])
 		float *result = main_cpu(C0_REAL, C0_IMAG_processo, C1_REAL, C1_IMAG_processo, WIDTH, chunck, CPU_GPU, THREADS, SAIDA);
 		// cout << rank << ": " << endl;
 		// for(int j=0; j<chunck*WIDTH;j++){
-		// 	cout << result[j] << " ";}
-		// 	cout << endl;
+		// cout << result[j] << " ";}
+		// cout << endl;
 
 		MPI_Send(result, WIDTH * chunck, MPI_FLOAT, numtasks - 1, 0, MPI_COMM_WORLD);
-	}
+	}}
 	MPI_Finalize();
 	return 0;
 }
