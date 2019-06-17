@@ -2,12 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <png.h> //Manipulação de pngs
+#include <png.h> // Manipulação de pngs
 using namespace std;
 
-
-//Função que transforma um vetor de valores entre 0 a 1 em cores na escala RGP
-//Baseado na função apresentada em 	http:;;www.labbookpages.co.uk/software/imgProc/libPNG.html
+// Função que transforma um vetor de valores entre 0 a 1 em cores na escala RGP
+// Baseado na função apresentada em 	http:;;www.labbookpages.co.uk/software/imgProc/libPNG.html
 inline void setColorValue(png_byte *ptr, double val)
 {
 	int v = (int)(val * 767);
@@ -37,20 +36,19 @@ inline void setColorValue(png_byte *ptr, double val)
 	}
 }
 
-
-//Função que recebe uma um vetor de floats representado a imagem de buffer e o salva no arquivo png 
+// Função que recebe uma um vetor de floats representado a imagem de buffer e o salva no arquivo png
 // com o nome filname
 int printImage(string file_name, int w, int h, float *buffer_image)
 {
-	//A cada oassi atualiza-se o inteiro status que controla se o fluxo de salvamento da imagem deve prosseguir.
-	//Se houver algum erro num passo intermediário o fluxo é interrompido.
+	// A cada oassi atualiza-se o inteiro status que controla se o fluxo de salvamento da imagem deve prosseguir.
+	// Se houver algum erro num passo intermediário o fluxo é interrompido.
 
 	FILE *file = NULL;
 	png_structp image_ptr = NULL;
 	png_infop info_ptr = NULL;
 	png_bytep buffer_row = NULL;
 
-	//Criação do Arquivo:
+	// Criação do Arquivo:
 	int status = 1;
 	file = fopen(file_name.c_str(), "wb");
 	if (file == NULL)
@@ -59,7 +57,7 @@ int printImage(string file_name, int w, int h, float *buffer_image)
 		status = 0;
 	}
 
-	//Alocação da estrutura de escrita:
+	// Alocação da estrutura de escrita:
 	if (status)
 	{
 		image_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -70,7 +68,7 @@ int printImage(string file_name, int w, int h, float *buffer_image)
 		}
 	}
 
-	//Alocação da estrutura de meta-dados (informações complementares do arquivo):
+	// Alocação da estrutura de meta-dados (informações complementares do arquivo):
 	if (status)
 	{
 		info_ptr = png_create_info_struct(image_ptr);
@@ -80,7 +78,7 @@ int printImage(string file_name, int w, int h, float *buffer_image)
 			status = 0;
 		}
 	}
-	//Criação da imagem:
+	// Criação da imagem:
 	if (status)
 	{
 		if (setjmp(png_jmpbuf(image_ptr)))
@@ -107,12 +105,12 @@ int printImage(string file_name, int w, int h, float *buffer_image)
 			{
 				setColorValue(&(buffer_row[x * 3]), buffer_image[y * w + x]);
 			}
-			png_write_row(image_ptr, buffer_row); //A trasferência do buffer para a imagem é feita linha por linha.
+			png_write_row(image_ptr, buffer_row); // A trasferência do buffer para a imagem é feita linha por linha.
 		}
 		png_write_end(image_ptr, NULL);
 	}
 
-	//Em qualquer caso todas as estruturas criadas são fechadas e finalizadas:
+	// Em qualquer caso todas as estruturas criadas são fechadas e finalizadas:
 	if (file != NULL)
 		fclose(file);
 	if (info_ptr != NULL)
@@ -125,15 +123,18 @@ int printImage(string file_name, int w, int h, float *buffer_image)
 	return status - 1;
 }
 
-//Função auxiliar que encontra o valor máximo num array de floats.
-//(Utilizada para a normaização do buffer antes da geração da imagem)
-float maximize(float* array, int array_size){
-	float max=757.0;
+// Função auxiliar que encontra o valor máximo num array de floats.
+// (Utilizada para a normaização do buffer antes da geração da imagem)
+float maximize(float *array, int array_size)
+{
+	float max = 757.0;
 
-	for(int i=0; i<array_size;i++){
-		if(array[i]>max){
-			max=array[i];
+	for (int i = 0; i < array_size; i++)
+	{
+		if (array[i] > max)
+		{
+			max = array[i];
 		}
 	}
-return max;
+	return max;
 }
