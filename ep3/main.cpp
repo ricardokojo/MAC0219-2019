@@ -5,7 +5,7 @@
 //********************************************//
 //*Arquivo peiincipal que chama as funções que envolvem MPI e fazem a administração e divisão do trabalho.
 // Essas divisão e feita com base nas linhas. Bocos de linhas, ou seja, blocos com a mesma largura da imagem são
-//distriuídos entre os diferentes processos. O processo mestre trata das linhas restantes da imagem e concatena 
+//distriuídos entre os diferentes processos. O processo mestre trata das linhas restantes da imagem e concatena
 //todos os resultados para produzir a imagem final. Ele normaliza ela e a salva no arquivo de nome pedido, usando
 // as funções d processamento de imagens de img_util.cpp *//
 
@@ -54,78 +54,80 @@ int main(int argc, char *argv[])
 	MPI_Status Stat;
 
 	//Adequa o tamanho do numero de processos, caso esse seja maior do que o número de linhas da imagem:
-	if(numtasks>HEIGHT)
+	if (numtasks > HEIGHT)
 	{
-		numtasks=HEIGHT;
+		numtasks = HEIGHT;
 	}
 
 	//Trata o caso em que há apenas um processo. Nesse caso não é necessário dividir o trabalho:
-	if(numtasks==1){
-		float *buffer_image = main_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH,HEIGHT, CPU_GPU, THREADS, SAIDA);
+	if (numtasks == 1)
+	{
+		float *buffer_image = main_cpu(C0_REAL, C0_IMAG, C1_REAL, C1_IMAG, WIDTH, HEIGHT, CPU_GPU, THREADS, SAIDA);
 		normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
 		MPI_Finalize();
 		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
 	}
 	//Trata o caso em que haverá distribuição:
-	else{
+	else
+	{
 		//Para o Processo Mestre:
 		if (rank == numtasks - 1)
 		{
-		// Instanciam-se variáveis relativas aos parâmetros de entrada, que ensse caso correspondem 
-		// as linhas não tratadas pelos processos filhos:
-		int chunck = HEIGHT / (numtasks - 1);
-		int chunck_resto = HEIGHT % (numtasks - 1);
-		float *result;
-		
-		//Processam-se as linhas restantes para o caso em que há linhas restantes a serem tratadas:
-		if (chunck_resto != 0)
-		{
-			float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
-			float C0_IMAG_resto = C0_IMAG + rank * chunck * DeltaY;
-			float C1_IMAG_resto = C0_IMAG_resto + (chunck_resto + 1) * DeltaY;
-			result = main_cpu(C0_REAL, C0_IMAG_resto, C1_REAL, C1_IMAG_resto, WIDTH, chunck + 1, CPU_GPU, THREADS, SAIDA);
-		}
+			// Instanciam-se variáveis relativas aos parâmetros de entrada, que ensse caso correspondem
+			// as linhas não tratadas pelos processos filhos:
+			int chunck = HEIGHT / (numtasks - 1);
+			int chunck_resto = HEIGHT % (numtasks - 1);
+			float *result;
 
-		//Receb-se uma a uma as mensagens dos processos filhos, contendo suas partições da matriz:
-		float *buffer_image = (float *)malloc(HEIGHT * WIDTH * sizeof(float));
-		for (int i = 0; i < numtasks - 1; i++)
-		{
-			MPI_Recv(&buffer_image[i * chunck * WIDTH], WIDTH * chunck, MPI_FLOAT, i, MPI_ANY_TAG, MPI_COMM_WORLD, &Stat);
-
-		}
-
-		//Concatena-se a parte da matriz processada pelo próprio pai aos resultados dos filhos:
-		if (chunck_resto != 0)
-		{
-			for (int i = 0; i < chunck_resto * WIDTH; i++)
+			//Processam-se as linhas restantes para o caso em que há linhas restantes a serem tratadas:
+			if (chunck_resto != 0)
 			{
-				buffer_image[(HEIGHT - chunck_resto) * WIDTH + i] = result[i];
+				float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
+				float C0_IMAG_resto = C0_IMAG + rank * chunck * DeltaY;
+				float C1_IMAG_resto = C0_IMAG_resto + (chunck_resto + 1) * DeltaY;
+				result = main_cpu(C0_REAL, C0_IMAG_resto, C1_REAL, C1_IMAG_resto, WIDTH, chunck + 1, CPU_GPU, THREADS, SAIDA);
+			}
+
+			//Receb-se uma a uma as mensagens dos processos filhos, contendo suas partições da matriz:
+			float *buffer_image = (float *)malloc(HEIGHT * WIDTH * sizeof(float));
+			for (int i = 0; i < numtasks - 1; i++)
+			{
+				MPI_Recv(&buffer_image[i * chunck * WIDTH], WIDTH * chunck, MPI_FLOAT, i, MPI_ANY_TAG, MPI_COMM_WORLD, &Stat);
+			}
+
+			//Concatena-se a parte da matriz processada pelo próprio pai aos resultados dos filhos:
+			if (chunck_resto != 0)
+			{
+				for (int i = 0; i < chunck_resto * WIDTH; i++)
+				{
+					buffer_image[(HEIGHT - chunck_resto) * WIDTH + i] = result[i];
+				}
+			}
+			//Normaliza-se a matriz:
+			normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
+			//Finaliza-se o  ambiente MPI:
+			MPI_Finalize();
+			//Salva a imagem e retorna
+			return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		}
+		//Para o caso dos processos filhos:
+		else
+		{
+			// Só os filhos  até o número de linhas trabalham. Os filhos excedentes são simplesmente finalizados:
+			if (rank < numtasks)
+			{
+				int chunck = HEIGHT / (numtasks - 1);
+				float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
+				float C0_IMAG_processo = C0_IMAG + rank * chunck * DeltaY;
+				float C1_IMAG_processo = C0_IMAG_processo + (chunck - 1) * DeltaY;
+				float *result = main_cpu(C0_REAL, C0_IMAG_processo, C1_REAL, C1_IMAG_processo, WIDTH, chunck, CPU_GPU, THREADS, SAIDA);
+				//Manda-se o seu resultado como mensagem para o processo Pai:
+				MPI_Send(result, WIDTH * chunck, MPI_FLOAT, numtasks - 1, 0, MPI_COMM_WORLD);
 			}
 		}
-		//Normaliza-se a matriz:
-		normalizeBuffer_cpu(buffer_image, WIDTH * HEIGHT, maximize(buffer_image, WIDTH * HEIGHT));
-		//Finaliza-se o  ambiente MPI:
+		//Finaliza o Ambiente MPI:
 		MPI_Finalize();
-		//Salva a imagem e retorna
-		return printImage(SAIDA, WIDTH, HEIGHT, buffer_image);
+		//Retorna:
+		return 0;
 	}
-	//Para o caso dos processos filhos:
-	else
-	{
-		// Só os filhos  até o número de linhas trabalham. Os filhos excedentes são simplesmente finalizados:
-		if(rank<numtasks){
-			int chunck = HEIGHT / (numtasks - 1);
-			float DeltaY = (C1_IMAG - C0_IMAG) / HEIGHT;
-			float C0_IMAG_processo = C0_IMAG + rank * chunck * DeltaY;
-			float C1_IMAG_processo = C0_IMAG_processo + (chunck - 1) * DeltaY;
-			float *result = main_cpu(C0_REAL, C0_IMAG_processo, C1_REAL, C1_IMAG_processo, WIDTH, chunck, CPU_GPU, THREADS, SAIDA);
-			//Manda-se o seu resultado como mensagem para o processo Pai:
-			MPI_Send(result, WIDTH * chunck, MPI_FLOAT, numtasks - 1, 0, MPI_COMM_WORLD);
-	}
-}
-	//Finaliza o Ambiente MPI:
-	MPI_Finalize();
-	//Retorna:
-	return 0;
-}
 }
