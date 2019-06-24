@@ -8,6 +8,8 @@ Ricardo Kojo - 10295429
 
 ## Explicação da Solução
 
+**Os testes foram feitos nas máquinas dota e brucutuIV do IME-USP.**
+
 A solução encontrada foi fortemente baseada no que foi feito para o EP2.
 
 O primeiro passo foi separar a solução antiga - escrita no arquivo `dmbrot.cu` - em diferentes arquivos:
@@ -28,7 +30,7 @@ Essa forma de separação de trabalho foi escolhido por ser considerada mais int
 
 A dificuldade inicial foi instalar e testar o **MPI**. Nem todos do grupo conseguiram fazer a biblioteca funcionar em suas próprias máquinas. Assim, os testes foram feitos na máquina **brucutu**, do IME-USP.
 
-A segunda dificuldade foi, assim como no EP passado, compilar e linkar os arquivos necessários. Ficou a dúvida entre usar `gcc`, `g++`, `nvcc`, `mpic++`, quais _flags_ eram necessárias e quais não eram etc. O post no Paca foi de grande ajuda, apesar de ainda ter tido problemas com a flag `-lmpi` na **brucutu**.
+A segunda dificuldade foi, assim como no EP passado, compilar e linkar os arquivos necessários. Ficou a dúvida entre usar `gcc`, `g++`, `nvcc`, `mpic++`, quais _flags_ eram necessárias e quais não eram etc. O post no Paca foi de grande ajuda, apesar de ainda ter tido problemas com a flag `-lmpi` na **brucutu**. Para isto, criamos a variável `$(BRUCUTUFLAGS)`, para informar ao compilador o local de `mpi.h`.
 
 ## Imagens geradas
 

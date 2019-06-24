@@ -8,7 +8,7 @@ BRUCUTUFLAGS=-I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi \
 -L/usr/lib/x86_64-linux-gnu/openmpi/lib -lmpi_cxx -lmpi
 
 dmbrot: cpu.o gpu.o img_util.o
-	$(CC) -o $@ main.cpp $(LDFLAGS) $^
+	$(CC) -o $@ main.cpp $(LDFLAGS) $^ $(BRUCUTUFLAGS)
 
 cpu.o: cpu.cpp
 	$(CC) $(CCFLAGS) $<
