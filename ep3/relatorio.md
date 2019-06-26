@@ -8,7 +8,7 @@ Ricardo Kojo - 10295429
 
 ## Explicação da Solução
 
-**Os testes foram feitos nas máquinas dota e brucutuIV do IME-USP.**
+**Os testes foram feitos na máquina e brucutuIV do IME-USP. O Makefile contem uma variável chamada `BRUCUTUFLAGS`, que contém as flags usadas na máquina.**
 
 A solução encontrada foi fortemente baseada no que foi feito para o EP2.
 
@@ -28,22 +28,30 @@ O segundo passo foi fazer a divisão de tarefas usando o **MPI**, que é feita d
 
 Essa forma de separação de trabalho foi escolhida por ser considerada mais intuitiva e mais fácil de controlar, além de combinar com a forma que a imagem é gerada e salva na memória: linha por linha. No caso do número de processos pedidos ser maior do que o número de linhas, é realizada uma readequação da distribuição do trabalho, usando o máximo de processos possíveis sem corromper as linhas. Entretanto, esse limite dificilmente seria atingido já que trava máxima de processos do mpi é usualmente bem mais baixa que o número de linhas em uma imagem comum.
 
-
 ## Dificuldades encontradas
 
 A dificuldade inicial foi instalar e testar o **MPI**. Nem todos do grupo conseguiram fazer a biblioteca funcionar em suas próprias máquinas. Assim, os testes foram feitos na máquina **brucutuIV**, do IME-USP.
 
 A segunda dificuldade foi, assim como no EP passado, compilar e linkeditar os arquivos necessários. Ficou a dúvida entre usar `gcc`, `g++`, `nvcc`, `mpic++`, quais _flags_ eram necessárias e quais não eram etc. O post no Paca foi de grande ajuda, apesar de ainda ter tido problemas com a flag `-lmpi` na **brucutuIV**. Para resolver esse problema, criamos a variável `$(BRUCUTUFLAGS)`, para informar ao compilador o local de `mpi.h`. Essas flags foram obtidas a partir na opção -showme do mpic++, na qual ele lista todas as flags especiais que está usando para a linkedição naquela máquina.
 
-##  Resultados e imagens geradas
+## Resultados e imagens geradas
 
 Produzimos algumas imagens de áreas conhecidas do plano complexo e obtivemos resultados iguais aos obtidos no EP anterior. Os tempos também mantiveram padrões parecidos com os do EP2. A adição de mais processos via MPI revelou uma pequena melhora de tempo até certo limite, especialmente para os casos em que os parâmetros do executável não previam paralelização via OpenMP, por exemplo. Entretanto reconhece-se o potencial de melhoria significativa do tempo caso o programa pudesse ser rodado em múltiplas máquinas, via **MPI**, acomodando um número muito maior de processos, e intensificando a paralelização através da distribuição.
 
 A seguir estão algumas imagens de exemplo geradas pelo EP, com seus respectivos parâmetros de entrada.
 
-todo
+> ![](images/np10_cord-2_1.3_0.6_-1.3_1000x1000_CPU_10.png)
+> Imagem gerada para `mpiexec -np 10 dmbrot -2 1.3 0.6 -1.3 1000 1000 CPU 10 1.png`
 
+> ![](images/np10_cord-2_1.3_0.6_-1.3_1000x1000_GPU_256.png)
+> Imagem gerada para `mpiexec -np 10 dmbrot -2 1.3 0.6 -1.3 1000 1000 GPU 256 2.png`
 
-##Conclusões
+> ![](images/np10_cord0.404583165379_0.234141469049_0.404612286758_0.234170590428_1000x1000_CPU_10.png)
+> Imagem gerada para `mpiexec -np 10 0.404583165379 0.234141469049 0.404612286758 0.234170590428 1000 1000 CPU 10 3.png`.
+
+> ![](images/np1_cord0.404583165379_0.234141469049_0.404612286758_0.234170590428_1000x1000_GPU_256.png)
+> Imagem gerada para `mpiexec -np 1 0.404583165379 0.234141469049 0.404612286758 0.234170590428 1000 1000 GPU 256 4.png`.
+
+## Conclusões
 
 Acreditamos ter cumprido com os objetivos do Exercício Programa, distribuindo a tarefa realizada no EP anterior via **MPI**. Apesar de não termos podido testar em um sistema com mais de uma máquina e apesar dos problemas que tivemos com a compilação e linkedição, sentimos que aprendemos muito sobre os conceitos de distribuição e sobre como usar o **MPI** para gerá-la. Sentimos que aprendemos bastante também sobre o processo de compilação, no geral.
