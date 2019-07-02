@@ -3,9 +3,10 @@
 
 #include <stdio.h>
 
-#define ARR_SIZE 10240
-#define WORK_ITERATIONS_LE 99000
-#define WORK_ITERATIONS_GT 100100
+#define ARR_SIZE 1000000
+extern __device__ int GPU_WORK_ITERATIONS;
+
+#define DIV_CEIL_INT(x, y) (1 + (((x) - 1) / (y)))
 
 // Print an error message and exit with failure code
 #define DIE(...) \
@@ -18,21 +19,13 @@
 #define cudaAssert(err) cudaCheckError((err), __FILE__, __LINE__)
 void cudaCheckError(cudaError_t err, const char *file, int line);
 
-// A factorial function. Implemented [almost] the worst way possible.
+// A time consuming function
 __device__
-int factorial(int n);
+double laborious_func_le_half(double x);
 
-// A step in the work for x <= 0.5
-// [0, 0.5] -> [0, 0.5]
-// It [almost] follows this function: https://bit.ly/2FjdsL0
+// Another time consuming function
 __device__
-double next_step_le_half(double x);
-
-// A step in the work for x > 0.5
-// ]0.5, 1] -> ]0.5, 1]
-// It [almost] follows this function: https://bit.ly/31D982B
-__device__
-double next_step_gt_half(double x);
+double laborious_func_gt_half(double x);
 
 // The two versions of the work. The second is expected to be faster.
 // Both should receive the work at "arr" and return at "results".

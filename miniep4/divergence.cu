@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <sys/time.h>
+#include <assert.h>
 #include "utils.h"
+#include "bootstrap.h"
 
-#define DTOL 1e-6
-#define MIN_SPEEDUP 1.5
+#define DTOL 1e-9
+#define MIN_SPEEDUP 1.4
+#define LABORIOUS_ITERATIONS 100
+
+__device__ int GPU_WORK_ITERATIONS;
 
 void cudaCheckError(cudaError_t err, const char *file, int line)
 {
@@ -14,44 +18,30 @@ void cudaCheckError(cudaError_t err, const char *file, int line)
                     cudaGetErrorString(err));
 }
 
-// A factorial function. Implemented [almost] the worst way possible.
+// A time consuming function
 __device__
-int factorial(int n)
+double laborious_func_le_half(double x)
 {
-        int ret = 1;
-        for (int i = 1; i <= n; ++i)
-                ret *= i;
-        return ret;
+        for(int i = 0; i < LABORIOUS_ITERATIONS; ++i) {
+                if (i % 2 == 0)
+                        x -= 0.0012;
+                else
+                        x += 0.0021;
+        }
+        return x;
 }
 
-// A step in the work for x <= 0.5
-// [0, 0.5] -> [0, 0.5]
-// It [almost] follows this function: https://bit.ly/2FjdsL0
+// Another time consuming function
 __device__
-double next_step_le_half(double x)
+double laborious_func_gt_half(double x)
 {
-        double x_p = x + 0.1;
-        double a = cos(-sin(cos(x_p)));
-        double b = sin(x_p) * atan(sin(x_p));
-        double c = sqrt(a / b) * sin((double) factorial(11)) - 0.23;
-        double k = c / 3.46;
-        if (k < 0) k = 0;
-        if (k > 0.5) k = 0.5;
-        return k;
-}
-
-// A step in the work for x > 0.5
-// ]0.5, 1] -> ]0.5, 1]
-// It [almost] follows this function: https://bit.ly/31D982B
-__device__
-double next_step_gt_half(double x)
-{
-        double l = sin(cos(pow(x, 3)) / pow(x, 2));
-        double m = cos(atan(x + sin(x) + atan((double)factorial(9))));
-        double k = ((l * m) + 0.88) / 1.2;
-        if (k <= 0.5) k = 0.51;
-        if (k > 1) k = 1;
-        return k;
+        for(int i = 0; i < LABORIOUS_ITERATIONS; ++i) {
+                if (i % 2 == 0)
+                        x += 0.0012;
+                else
+                        x -= 0.0021;
+        }
+        return x;
 }
 
 int check_results(double *reference, double *result)
@@ -72,11 +62,11 @@ void randomly_fill_array(double *v, int size)
 
 int main(int argc, char **argv)
 {
-        double arr[ARR_SIZE];
+        static double arr[ARR_SIZE];
         struct timeval start, end;
         double *results_v1, *results_v2;
         double elapsed_v1, elapsed_v2, speedup;
-        int correctness;
+        int correctness, gpu_work_iterations;
         int ret = 0;
 
         results_v1 = (double *) malloc(ARR_SIZE * sizeof(double));
@@ -85,20 +75,41 @@ int main(int argc, char **argv)
                 DIE("failed to malloc at main\n");
 
         randomly_fill_array(arr, ARR_SIZE);
+        printf("Warming up...               ");
+        warm_gpu_up();
+        printf("done.\n");
 
+        printf("Tunning test parameters...  ");
+        fflush(stdout);
+        gpu_work_iterations = tune_iterations(arr);
+        if (gpu_work_iterations <= 0)
+                DIE("Failed to tune... Too fast GPU?\n");
+        cudaAssert(cudaMemcpyToSymbol(GPU_WORK_ITERATIONS, &gpu_work_iterations,
+                                      sizeof(int)));
+        printf("done.\n");
+        printf("Note: using GPU_WORK_ITERATIONS = %d\n", gpu_work_iterations);
+        printf("(based on tunning for this machine)\n\n");
+
+        printf("Running v1...               ");
+        fflush(stdout);
         gettimeofday(&start, NULL);
         launch_gpu_work_v1(arr, &results_v1);
         gettimeofday(&end, NULL);
         elapsed_v1 = (end.tv_sec - start.tv_sec) +
                      (end.tv_usec - start.tv_usec) / 1000000.0;
+        printf("done.\n");
 
+        printf("Running v2...               ");
+        fflush(stdout);
         gettimeofday(&start, NULL);
         launch_gpu_work_v2(arr, &results_v2);
         gettimeofday(&end, NULL);
         elapsed_v2 = (end.tv_sec - start.tv_sec) +
                      (end.tv_usec - start.tv_usec) / 1000000.0;
+        printf("done.\n\n");
 
         // Check results and time
+        printf("Results\n===================\n");
         correctness = check_results(results_v1, results_v2);
         speedup = elapsed_v1 / elapsed_v2;
         printf("v1: %.4fs\n", elapsed_v1);
