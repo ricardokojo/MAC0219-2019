@@ -30,7 +30,7 @@ void gpu_work_v2(double *arr)
 }
 
 // Launch the work on arr and return it at results;
-void launch_gpu_work_v1(double *arr, double **results)
+void launch_gpu_work_v2(double *arr, double **results)
 {
         double *d_arr;
 
