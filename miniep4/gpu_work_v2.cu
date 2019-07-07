@@ -11,22 +11,25 @@ void gpu_work_v2(double *arr)
 
         int delayed = 0;
         int cond;
+        double a = arr[id];
 
         for(int i = 0; i < GPU_WORK_ITERATIONS;) {
                 if (!delayed)
-                        cond = (arr[id] <= 0.5);
+                        cond = (a <= 0.5);
 
                 int cond_for_all = !cond_for_all;
                 delayed = (cond_for_all != cond);
                 if (!delayed) {
                         if (cond_for_all) {
-                                arr[id] = laborious_func_le_half(arr[id]);
+                                a = laborious_func_le_half(a);
                         } else {
-                                arr[id] = laborious_func_gt_half(arr[id]);
+                                a = laborious_func_gt_half(a);
                         }
                         ++i;
                 }
         }
+
+        arr[id] = a;
 }
 
 // Launch the work on arr and return it at results;
