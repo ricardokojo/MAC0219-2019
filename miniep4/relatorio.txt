@@ -1,0 +1,56 @@
+Ricardo Hideki Hangai Kojo - 10295429
+
+
+1. Explicação da solução e técnicas utilizadas:
+
+
+A solução encontrada foi baseada diretamente no artigo passado como
+referência[1].
+
+Após a alteração no enunciado, tive dificuldades para conseguir speedups
+mínimos. Após conversar com outros colegas, me recomendaram "brincar" com as
+técnicas do artigo e verificar uma apresentação de sldies sobre o mesmo
+artigo[2], que explicava de forma mais didática.
+
+O artigo mencionava duas técnicas: iteration delaying e branch distribution. A
+minha solução foi juntar as duas técnicas, praticamente copiando o código para
+o iteration delaying e fazendo uma breve alteração para o branch distribution.
+
+Explicando rapidamente, a alteração feita para o alcançar o iteration delaying
+faz com que a função intercale a chamada dentro de if e else. Em outras
+palavras, em uma iteração do loop, o programa executa as instruções dentro do
+if, fazendo as instruções que executariam o else esperar (iterar novamente, sem
+incrementar).  Na próxima iteração, o programa executa as instruções dentro do
+else, fazendo as que executariam o if esperar. O objetivo é maximizar a
+execução de uma única instrução (seja o que estiver dentro do if, ou dentro do
+else).
+
+A outra parte da solução envolve o branch distribuition, cujo objetivo é
+diminuir o tamanho de código divergente entre as threads. Para isso, foi
+adicionada apenas a linha "double a = arr[id]" e no final "arr[id] = a".
+
+Essas melhorias são direta e unicamente relacionadas ao branch divergence. Sem
+utilizar GPU ou CUDA para executar o programa, a mudança para o iteration
+delaying faria com que o programa rodasse mais devagar, já que a função tem que
+esperar para poder entrar na condição. Já para o branch distribuition, a
+mudança é irrelevante.
+
+Com apenas essas duas alterações, consegui o speedup de mais de 1.8x.
+
+
+2. A técnica empregada traria o mesmo speedup se aplicada em um código
+paralelizado em CPU? Por quê?
+
+
+Não. As técnicas empregadas não trariam nenhuma melhoria em um código
+paralelizado em CPU, pois as alterações de código foram feitas especificamente
+para a forma na qual a GPU se organiza para paralelizar seu trabalho. Em um
+programa comum, as alterações muito provavelmente o deixariam mais lento, por
+causa do delay utilizado para o iteration delaying. Enquanto isso, a alteração
+feita para o branch distribution seria irrelevante.
+
+
+[1]
+https://www.researchgate.net/publication/220939034_Reducing_branch_divergence_in_GPU_programs
+[2]
+https://pdfs.semanticscholar.org/7e00/b74ee760ecb91e8b43d6378d9cb2bfe35f9d.pdf
